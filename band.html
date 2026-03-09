@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meet the Band — 2DieFor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --accent: #c8ff00;
+    --gray: #1a1a1a;
+    --mid: #333;
+    --muted: #888;
+
+    /* per-member accent colors */
+    --wraith: #c8ff00;
+    --siren: #00e5ff;
+    --crimson: #ff2233;
+    --styx: #ff6600;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  nav a:hover, nav a.active { color: var(--accent); }
+
+  /* ── HERO HEADER ── */
+  .page-hero {
+    padding: 14rem 4rem 6rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .page-hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 80% 50%, rgba(200,255,0,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 10% 80%, rgba(0,229,255,0.03) 0%, transparent 50%);
+  }
+
+  .hero-grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .page-hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 10vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    position: relative;
+  }
+
+  .page-hero p {
+    margin-top: 2rem;
+    font-size: 1rem;
+    color: rgba(245,245,240,0.55);
+    max-width: 520px;
+    line-height: 1.8;
+    position: relative;
+  }
+
+  /* ── MEMBERS ── */
+  .members-section {
+    padding: 0;
+  }
+
+  .member {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* alternating layout */
+  .member:nth-child(even) {
+    direction: rtl;
+  }
+  .member:nth-child(even) > * {
+    direction: ltr;
+  }
+
+  /* photo side */
+  .member-photo {
+    position: relative;
+    overflow: hidden;
+    min-height: 80vh;
+  }
+
+  .member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    filter: grayscale(15%) contrast(1.05);
+    transition: filter 0.6s ease, transform 0.6s ease;
+  }
+
+  .member:hover .member-photo img {
+    filter: grayscale(0%) contrast(1.1);
+    transform: scale(1.02);
+  }
+
+  .member-photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent 60%, var(--black));
+    pointer-events: none;
+  }
+
+  .member:nth-child(even) .member-photo-overlay {
+    background: linear-gradient(to left, transparent 60%, var(--black));
+  }
+
+  /* photo placeholder */
+  .photo-placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray);
+    border-right: 1px solid rgba(255,255,255,0.04);
+    gap: 1rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .photo-placeholder .ph-icon {
+    font-size: 3rem;
+    opacity: 0.2;
+  }
+
+  /* info side */
+  .member-info {
+    padding: 6rem 5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+
+  .member-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 8rem;
+    line-height: 1;
+    position: absolute;
+    top: 3rem;
+    right: 4rem;
+    opacity: 0.04;
+    pointer-events: none;
+    letter-spacing: -0.02em;
+  }
+
+  .member-role {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .member-role::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+  }
+
+  .member-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 6vw, 6.5rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    margin-bottom: 2.5rem;
+  }
+
+  .member-bio {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    line-height: 1.95;
+    color: rgba(245,245,240,0.68);
+    max-width: 480px;
+    margin-bottom: 3rem;
+  }
+
+  .member-bio p + p {
+    margin-top: 1.2rem;
+  }
+
+  /* instruments */
+  .member-instruments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .instrument-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .instrument-tag:hover { opacity: 1; }
+
+  /* quote */
+  .member-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: rgba(245,245,240,0.4);
+    padding-left: 1.5rem;
+    border-left: 2px solid;
+    line-height: 1.7;
+    max-width: 400px;
+  }
+
+  /* ── PER-MEMBER COLOR THEMING ── */
+
+  /* WRAITH — acid green */
+  #wraith .member-role { color: var(--wraith); }
+  #wraith .member-role::before { background: var(--wraith); }
+  #wraith .member-name { color: var(--white); }
+  #wraith .instrument-tag { border-color: var(--wraith); color: var(--wraith); }
+  #wraith .member-quote { border-color: var(--wraith); color: rgba(200,255,0,0.45); }
+  #wraith .member-number { color: var(--wraith); }
+  #wraith .member-photo-overlay {
+    background: linear-gradient(to right, transparent 50%, var(--black)),
+                linear-gradient(to bottom, transparent 70%, rgba(200,255,0,0.04));
+  }
+
+  /* SIREN — electric cyan */
+  #siren .member-role { color: var(--siren); }
+  #siren .member-role::before { background: var(--siren); }
+  #siren .member-name { color: var(--white); }
+  #siren .instrument-tag { border-color: var(--siren); color: var(--siren); }
+  #siren .member-quote { border-color: var(--siren); color: rgba(0,229,255,0.45); }
+  #siren .member-number { color: var(--siren); }
+  #siren .member-photo-overlay {
+    background: linear-gradient(to left, transparent 50%, var(--black)),
+                linear-gradient(to bottom, transparent 70%, rgba(0,229,255,0.04));
+  }
+
+  /* CRIMSON — blood red */
+  #crimson .member-role { color: var(--crimson); }
+  #crimson .member-role::before { background: var(--crimson); }
+  #crimson .member-name { color: var(--white); }
+  #crimson .instrument-tag { border-color: var(--crimson); color: var(--crimson); }
+  #crimson .member-quote { border-color: var(--crimson); color: rgba(255,34,51,0.45); }
+  #crimson .member-number { color: var(--crimson); }
+  #crimson .member-photo-overlay {
+    background: linear-gradient(to right, transparent 50%, var(--black)),
+                linear-gradient(to bottom, transparent 70%, rgba(255,34,51,0.04));
+  }
+
+  /* STYX — fire orange */
+  #styx .member-role { color: var(--styx); }
+  #styx .member-role::before { background: var(--styx); }
+  #styx .member-name { color: var(--white); }
+  #styx .instrument-tag { border-color: var(--styx); color: var(--styx); }
+  #styx .member-quote { border-color: var(--styx); color: rgba(255,102,0,0.45); }
+  #styx .member-number { color: var(--styx); }
+  #styx .member-photo-overlay {
+    background: linear-gradient(to left, transparent 50%, var(--black)),
+                linear-gradient(to bottom, transparent 70%, rgba(255,102,0,0.04));
+  }
+
+  /* ── BACK LINK ── */
+  .back-to-site {
+    padding: 5rem 4rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 2.5rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+  }
+  .footer-logo span { color: var(--accent); }
+
+  .footer-copy {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 899px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { display: none; }
+    .page-hero { padding: 10rem 1.5rem 4rem; }
+
+    .member {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    .member:nth-child(even) { direction: ltr; }
+
+    .member-photo { min-height: 60vw; max-height: 70vw; }
+    .member-photo-overlay,
+    #siren .member-photo-overlay,
+    #styx .member-photo-overlay {
+      background: linear-gradient(to bottom, transparent 50%, var(--black));
+    }
+
+    .member-info { padding: 3rem 1.5rem 4rem; }
+    .member-number { display: none; }
+    .member-bio { font-size: 1rem; }
+
+    footer { flex-direction: column; gap: 0.75rem; padding: 2rem 1.5rem; }
+    .back-to-site { padding: 3rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">2<span>DIE</span>FOR</a>
+  <ul>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#music">Music</a></li>
+    <li><a href="index.html#stories">Stories</a></li>
+    <li><a href="band.html" class="active">The Band</a></li>
+    <li><a href="index.html#social">Follow</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HERO -->
+<header class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="section-label">The People Behind the Sound</div>
+  <h1>MEET<br>THE BAND</h1>
+  <p>Four identities. Four stories. One shared obsession with turning pain into sound. Behind every mask is a reason — and behind every reason is a song.</p>
+</header>
+
+<!-- MEMBERS -->
+<section class="members-section">
+
+  <!-- ── WRAITH ── -->
+  <div class="member" id="wraith">
+    <div class="member-photo">
+      <img src="images/wraith.jpg" alt="Wraith" onerror="this.parentElement.innerHTML='<div class=\'photo-placeholder\'><span class=\'ph-icon\'>🎭</span><span>Wraith</span></div>'">
+      <div class="member-photo-overlay"></div>
+    </div>
+    <div class="member-info reveal">
+      <div class="member-number">01</div>
+      <div class="member-role">Lead Vocals · Lead Guitar</div>
+      <h2 class="member-name">WRAITH</h2>
+      <div class="member-bio">
+        <p>No one knows his real name. No one has ever seen his full face. What they do know is that the moment Wraith steps on stage, the air changes — something heavier settles in, something older.</p>
+        <p>He came from nowhere and built everything from silence. The mask isn't a gimmick. It's a boundary between the person he was and the sound he needed to become. Every song he writes is a room he used to be trapped in, turned into a door.</p>
+        <p>As the band's architect and emotional core, Wraith writes most of the lyrics — brutal, honest, and laced with the kind of beauty that only survives after everything else has burned.</p>
+      </div>
+      <div class="member-instruments">
+        <span class="instrument-tag">Lead Vocals</span>
+        <span class="instrument-tag">Lead Guitar</span>
+        <span class="instrument-tag">Songwriter</span>
+      </div>
+      <blockquote class="member-quote">"The mask lets me be more honest than I've ever been without it."</blockquote>
+    </div>
+  </div>
+
+  <!-- ── SIREN ── -->
+  <div class="member" id="siren">
+    <div class="member-photo">
+      <img src="images/siren.jpg" alt="Siren" onerror="this.parentElement.innerHTML='<div class=\'photo-placeholder\'><span class=\'ph-icon\'>🎵</span><span>Siren</span></div>'">
+      <div class="member-photo-overlay"></div>
+    </div>
+    <div class="member-info reveal">
+      <div class="member-number">02</div>
+      <div class="member-role">Co-Vocals · Bass · Guitar · Piano</div>
+      <h2 class="member-name">SIREN</h2>
+      <div class="member-bio">
+        <p>She doesn't ask for your attention. She takes it. Siren's voice cuts through frequencies other singers can't reach — a precision instrument wrapped in controlled fury.</p>
+        <p>The respirator mask she wears on stage started as armour against a world that was too loud. Now it's become her signature — the visual embodiment of someone who speaks only when it matters, and when she does, it lands like a blade.</p>
+        <p>Equally at home behind a bass, a guitar, or a piano, Siren is the band's most versatile force — the connective tissue between Wraith's raw rage and the melody that makes it bearable.</p>
+      </div>
+      <div class="member-instruments">
+        <span class="instrument-tag">Co-Vocals</span>
+        <span class="instrument-tag">Bass Guitar</span>
+        <span class="instrument-tag">Guitar</span>
+        <span class="instrument-tag">Piano</span>
+      </div>
+      <blockquote class="member-quote">"I don't perform. I transmit."</blockquote>
+    </div>
+  </div>
+
+  <!-- ── CRIMSON ── -->
+  <div class="member" id="crimson">
+    <div class="member-photo">
+      <img src="images/crimson.jpg" alt="Crimson" onerror="this.parentElement.innerHTML='<div class=\'photo-placeholder\'><span class=\'ph-icon\'>🔥</span><span>Crimson</span></div>'">
+      <div class="member-photo-overlay"></div>
+    </div>
+    <div class="member-info reveal">
+      <div class="member-number">03</div>
+      <div class="member-role">Backing Vocals · Bass · Guitar · Synth</div>
+      <h2 class="member-name">CRIMSON</h2>
+      <div class="member-bio">
+        <p>Crimson doesn't back anything up — she sets it on fire. Branded in red from the tips of her hair to the mask across her eyes, she is chaos made disciplined, fury made musical.</p>
+        <p>She found the band through a series of near-misses and wrong turns that somehow all pointed to the same stage. The synthpad under her hands and the bass in her grip are extensions of the same anger she has carried since childhood — but now it has shape, rhythm, and somewhere to go.</p>
+        <p>Her layered vocal harmonies and relentless low-end drive give 2DieFor its physical weight — the part of the music you feel in your chest before you understand it with your ears.</p>
+      </div>
+      <div class="member-instruments">
+        <span class="instrument-tag">Backing Vocals</span>
+        <span class="instrument-tag">Bass Guitar</span>
+        <span class="instrument-tag">Guitar</span>
+        <span class="instrument-tag">Synthpad</span>
+      </div>
+      <blockquote class="member-quote">"Red isn't a colour. It's a warning."</blockquote>
+    </div>
+  </div>
+
+  <!-- ── STYX ── -->
+  <div class="member" id="styx">
+    <div class="member-photo">
+      <img src="images/styx.jpg" alt="Styx" onerror="this.parentElement.innerHTML='<div class=\'photo-placeholder\'><span class=\'ph-icon\'>🥁</span><span>Styx</span></div>'">
+      <div class="member-photo-overlay"></div>
+    </div>
+    <div class="member-info reveal">
+      <div class="member-number">04</div>
+      <div class="member-role">Drums · Percussion</div>
+      <h2 class="member-name">STYX</h2>
+      <div class="member-bio">
+        <p>Every band has a heartbeat. In 2DieFor, the heartbeat hits like a freight train. Styx is the engine room — broad-shouldered, immovable, and quietly the most dangerous person on stage.</p>
+        <p>Behind the angular black mask with its burning red edges, there's a drummer who treats every set like a controlled demolition. Precise where it needs to be precise. Brutal where it needs to be brutal. Never confusing the two.</p>
+        <p>He doesn't talk much between songs. He doesn't need to. When the sticks come down, everything he has to say is already perfectly clear.</p>
+      </div>
+      <div class="member-instruments">
+        <span class="instrument-tag">Drums</span>
+        <span class="instrument-tag">Percussion</span>
+      </div>
+      <blockquote class="member-quote">"The beat doesn't wait for anyone. Neither do I."</blockquote>
+    </div>
+  </div>
+
+</section>
+
+<!-- BACK -->
+<div class="back-to-site">
+  <a href="index.html" class="back-link">← Back to 2DieFor.online</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">2<span>DIE</span>FOR</div>
+  <div class="footer-copy">© 2025 2DieFor · All Rights Reserved</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
