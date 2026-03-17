@@ -505,8 +505,7 @@
             ${msg.song ? `<div class="message-song">${escHtml(msg.song)}</div>` : ''}
             ${msg.country ? `<div class="message-country">📍 ${escHtml(msg.country)}</div>` : ''}
           </div>
-          <div class="message-text">${escHtml(msg.message).replace(/
-/g, '<br>')}</div>
+          <div class="message-text">${escHtml(msg.message).split("\n").join("<br>")}</div>
           <div class="message-date">${formatDate(msg.date)}</div>
         `;
         container.appendChild(card);
