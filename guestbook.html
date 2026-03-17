@@ -460,9 +460,12 @@
 </footer>
 
 <script>
-  const STORAGE_KEY = 'guestbook_messages';
+  const BIN_ID = '69b9748cc3097a1dd533101e';
+  const API_KEY = '$2a$10$8VnYn3R3Gu3INzbUwtHmNeOw53GUW7n7NH5EsU71gu7vae3kkWiTi';
+  const BASE_URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
   const RATE_LIMIT_KEY = 'gb_last_submit';
-  const RATE_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
+  const RATE_LIMIT_MS = 5 * 60 * 1000;
+  const FORM_LOAD_TIME = Date.now();
 
   const SPAM_WORDS = [
     'buy cheap', 'click here', 'casino', 'viagra', 'crypto', 'bitcoin',
@@ -471,18 +474,17 @@
     'act now', 'winner', 'congratulations', 'http://', 'https://'
   ];
 
-  // Record when the form was loaded (for time check)
-  const FORM_LOAD_TIME = Date.now();
-
   window.addEventListener('load', loadMessages);
 
   async function loadMessages() {
     const container = document.getElementById('messages-container');
     const countEl = document.getElementById('messages-count');
-
     try {
-      const result = await window.storage.get(STORAGE_KEY, true);
-      const messages = result ? JSON.parse(result.value) : [];
+      const res = await fetch(BASE_URL + '/latest', {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+      const data = await res.json();
+      const messages = data.record.messages || [];
 
       if (messages.length === 0) {
         container.innerHTML = '<div class="messages-empty">No messages yet. Be the first to leave one.</div>';
@@ -493,7 +495,6 @@
       countEl.textContent = messages.length + ' message' + (messages.length !== 1 ? 's' : '');
       container.innerHTML = '';
 
-      // Show newest first
       [...messages].reverse().forEach((msg, i) => {
         const card = document.createElement('div');
         card.className = 'message-card';
@@ -504,15 +505,15 @@
             ${msg.song ? `<div class="message-song">${escHtml(msg.song)}</div>` : ''}
             ${msg.country ? `<div class="message-country">📍 ${escHtml(msg.country)}</div>` : ''}
           </div>
-          <div class="message-text">${escHtml(msg.message).replace(/\n/g, '<br>')}</div>
+          <div class="message-text">${escHtml(msg.message).replace(/
+/g, '<br>')}</div>
           <div class="message-date">${formatDate(msg.date)}</div>
         `;
         container.appendChild(card);
       });
-
     } catch (err) {
-      container.innerHTML = '<div class="messages-empty">No messages yet. Be the first to leave one.</div>';
-      countEl.textContent = '';
+      container.innerHTML = '<div class="messages-empty">Could not load messages. Please try refreshing.</div>';
+      console.error(err);
     }
   }
 
@@ -522,36 +523,33 @@
     const songEl    = document.getElementById('gb-song');
     const msgEl     = document.getElementById('gb-message');
     const submitBtn = document.getElementById('gb-submit');
-    const statusEl  = document.getElementById('gb-status');
 
     const name    = nameEl.value.trim();
     const country = countryEl.value.trim();
     const song    = songEl.value.trim();
     const message = msgEl.value.trim();
 
-    // ── HONEYPOT CHECK ──
-    const honeypot = document.getElementById('gb-honeypot').value;
-    if (honeypot) { showStatus('Message posted! Thank you. ✓', false); return; } // silently drop
-
-    // ── TIME CHECK — less than 3 seconds = bot ──
-    if (Date.now() - FORM_LOAD_TIME < 3000) {
-      showStatus('Message posted! Thank you. ✓', false); return; // silently drop
+    // Honeypot
+    if (document.getElementById('gb-honeypot').value) {
+      showStatus('Message posted! Thank you. ✓', false); return;
     }
-
-    // ── RATE LIMIT — max 1 per 5 minutes ──
+    // Time check
+    if (Date.now() - FORM_LOAD_TIME < 3000) {
+      showStatus('Message posted! Thank you. ✓', false); return;
+    }
+    // Rate limit
     const lastSubmit = parseInt(localStorage.getItem(RATE_LIMIT_KEY) || '0');
     if (Date.now() - lastSubmit < RATE_LIMIT_MS) {
       const wait = Math.ceil((RATE_LIMIT_MS - (Date.now() - lastSubmit)) / 60000);
       showStatus(`Please wait ${wait} minute${wait !== 1 ? 's' : ''} before posting again.`, true);
       return;
     }
-
-    // ── SPAM WORD FILTER ──
+    // Spam filter
     const combined = (name + ' ' + message).toLowerCase();
-    const isSpam = SPAM_WORDS.some(word => combined.includes(word));
-    if (isSpam) { showStatus('Message posted! Thank you. ✓', false); return; } // silently drop
-
-    // ── BASIC VALIDATION ──
+    if (SPAM_WORDS.some(w => combined.includes(w))) {
+      showStatus('Message posted! Thank you. ✓', false); return;
+    }
+    // Validation
     if (!name) { showStatus('Please enter your name.', true); nameEl.focus(); return; }
     if (!message) { showStatus('Please write a message.', true); msgEl.focus(); return; }
     if (message.length < 5) { showStatus('Message is too short.', true); return; }
@@ -560,38 +558,36 @@
     showStatus('Posting...', false);
 
     try {
-      // Load existing
-      let messages = [];
-      try {
-        const result = await window.storage.get(STORAGE_KEY, true);
-        if (result) messages = JSON.parse(result.value);
-      } catch(e) { messages = []; }
+      // Fetch current messages
+      const getRes = await fetch(BASE_URL + '/latest', {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+      const getData = await getRes.json();
+      const messages = getData.record.messages || [];
 
       // Add new message
-      messages.push({
-        name,
-        country,
-        song,
-        message,
-        date: new Date().toISOString()
-      });
+      messages.push({ name, country, song, message, date: new Date().toISOString() });
 
       // Save back
-      await window.storage.set(STORAGE_KEY, JSON.stringify(messages), true);
+      const putRes = await fetch(BASE_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': API_KEY
+        },
+        body: JSON.stringify({ messages })
+      });
 
-      // Save rate limit timestamp
+      if (!putRes.ok) throw new Error('Save failed');
+
+      // Rate limit
       localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
 
       // Clear form
-      nameEl.value = '';
-      countryEl.value = '';
-      songEl.value = '';
-      msgEl.value = '';
+      nameEl.value = ''; countryEl.value = ''; songEl.value = ''; msgEl.value = '';
 
       showStatus('Message posted! Thank you. ✓', false);
       await loadMessages();
-
-      // Scroll to messages
       document.getElementById('messages-container').scrollIntoView({ behavior: 'smooth' });
 
     } catch (err) {
@@ -620,4 +616,3 @@
 </script>
 
 </body>
-</html>

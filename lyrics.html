@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lyrics — 2DieFor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --accent: #c8ff00;
+    --gray: #1a1a1a;
+    --mid: #2a2a2a;
+    --muted: #888;
+    --red: #e8202a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+  nav ul { list-style: none; display: none; gap: 2rem; }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  nav a:hover, nav a.active { color: var(--accent); }
+  .nav-spotify {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent); text-decoration: none;
+    border: 1px solid rgba(200,255,0,0.25); padding: 0.4rem 0.85rem;
+    transition: background 0.2s;
+  }
+  .nav-spotify:hover { background: rgba(200,255,0,0.08); }
+
+  @media (min-width: 900px) {
+    nav { padding: 1.5rem 4rem; }
+    nav ul { display: flex; }
+    .nav-spotify { display: none; }
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    padding: 8rem 1.2rem 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .section-label {
+    font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; max-width: 60px; height: 1px;
+    background: var(--accent); opacity: 0.4;
+  }
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 12vw, 7rem);
+    line-height: 0.9;
+  }
+  .page-subtitle {
+    margin-top: 1rem; font-size: 1rem;
+    color: rgba(245,245,240,0.5); line-height: 1.8; max-width: 480px;
+  }
+  @media (min-width: 900px) { .page-header { padding: 8rem 4rem 3rem; } }
+
+  /* SEARCH */
+  .search-bar {
+    padding: 1.5rem 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: var(--gray);
+  }
+  .search-input {
+    width: 100%; max-width: 480px;
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; font-weight: 300;
+    padding: 0.75rem 1rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+  @media (min-width: 900px) { .search-bar { padding: 1.5rem 4rem; } }
+
+  /* MAIN LAYOUT */
+  .lyrics-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 80vh;
+  }
+
+  @media (min-width: 900px) {
+    .lyrics-layout {
+      grid-template-columns: 260px 1fr;
+      align-items: start;
+    }
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    border-right: 1px solid rgba(255,255,255,0.06);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 64px;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+    display: none;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #333; }
+
+  @media (min-width: 900px) { .sidebar { display: block; } }
+
+  .sidebar-album { margin-bottom: 0.5rem; }
+  .sidebar-album-name {
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); padding: 0.6rem 1.5rem 0.3rem;
+  }
+  .sidebar-song {
+    display: block; width: 100%;
+    background: none; border: none; border-left: 2px solid transparent;
+    color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; font-weight: 300;
+    padding: 0.45rem 1.5rem; text-align: left; cursor: pointer;
+    transition: all 0.15s; letter-spacing: 0.03em;
+  }
+  .sidebar-song:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+  .sidebar-song.active {
+    color: var(--white); border-left-color: var(--accent);
+    background: rgba(200,255,0,0.04);
+  }
+  .sidebar-song.hidden { display: none; }
+
+  /* MOBILE SONG PICKER */
+  .mobile-picker {
+    display: block;
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .mobile-picker select {
+    width: 100%;
+    background: var(--gray);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; padding: 0.7rem 1rem;
+    outline: none; border-radius: 0; -webkit-appearance: none;
+  }
+  @media (min-width: 900px) { .mobile-picker { display: none; } }
+
+  /* SONG PANELS */
+  .song-panels { padding: 0; }
+
+  .song-panel { display: none; }
+  .song-panel.active { display: block; }
+
+  .song-panel-header {
+    padding: 2rem 1.5rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .song-album-tag {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 0.5rem;
+  }
+  .song-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    letter-spacing: 0.04em; line-height: 1; margin-bottom: 1rem;
+  }
+  .yt-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    color: var(--red); text-decoration: none;
+    font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase;
+    border: 1px solid rgba(232,32,42,0.3); padding: 0.4rem 0.9rem;
+    transition: background 0.2s;
+  }
+  .yt-btn:hover { background: rgba(232,32,42,0.08); }
+
+  .song-body {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 700px) {
+    .song-body { grid-template-columns: 1fr 1fr; }
+  }
+
+  .song-story {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  @media (min-width: 700px) {
+    .song-story { border-right: 1px solid rgba(255,255,255,0.06); border-bottom: none; }
+  }
+
+  .song-lyrics {
+    padding: 1.5rem;
+  }
+
+  .col-label {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1rem;
+  }
+
+  .story-text {
+    font-size: 0.88rem; line-height: 1.9;
+    color: rgba(245,245,240,0.65);
+  }
+  .story-text p + p { margin-top: 0.8rem; }
+
+  .lyrics-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem; font-weight: 300;
+    line-height: 2; color: rgba(245,245,240,0.75);
+    white-space: pre-wrap; word-break: break-word;
+  }
+
+  @media (min-width: 900px) {
+    .song-panel-header { padding: 2.5rem 2.5rem 2rem; }
+    .song-story, .song-lyrics { padding: 2rem 2.5rem; }
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 2rem 1.2rem;
+    display: flex; flex-direction: column; gap: 0.5rem;
+    align-items: center; text-align: center;
+  }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.1em; }
+  .footer-logo span { color: var(--accent); }
+  .footer-copy { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.05em; }
+  @media (min-width: 900px) { footer { flex-direction: row; text-align: left; padding: 3rem 4rem; } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">2<span>DIE</span>FOR</a>
+  <ul>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="band.html">The Band</a></li>
+    <li><a href="index.html#music">Music</a></li>
+    <li><a href="index.html#stories">Stories</a></li>
+    <li><a href="videos.html">Videos</a></li>
+    <li><a href="lyrics.html" class="active">Lyrics</a></li>
+    <li><a href="guestbook.html">Guestbook</a></li>
+    <li><a href="index.html#social">Follow</a></li>
+  </ul>
+  <a href="https://open.spotify.com/artist/7ktontuidnJoXRyiM8maQd" target="_blank" class="nav-spotify">▶ Spotify</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="section-label">Words</div>
+  <h1 class="page-title">Lyrics</h1>
+  <p class="page-subtitle">Every word means something. Read the story behind the song, then read the song itself.</p>
+</div>
+
+<!-- SEARCH -->
+<div class="search-bar">
+  <input class="search-input" type="text" placeholder="Search songs..." oninput="searchSongs(this.value)">
+</div>
+
+<!-- MOBILE PICKER -->
+<div class="mobile-picker">
+  <select onchange="showSong(this.value)">
+    <option value="bp">Breaking Point — Fallout</option><option value="s2">Rising From The Ashes — Fallout</option><option value="s3">Climbing Higher — Fallout</option><option value="s4">Whole — Fallout</option><option value="s5">Mary-Anne — Fallout</option><option value="s6">6AM — Fallout</option><option value="s7">Fate — Fallout</option><option value="s8">I Own The Night — Fallout</option><option value="s9">Broken — Fallout</option><option value="s10">The Fortress — Fallout</option><option value="s11">Twist and Weave — Fallout</option><option value="s12">Fractured Lines — Fallout</option><option value="s13">The Fray — Fallout</option><option value="s14">Remember The Lake — Fallout</option><option value="s15">No More Silence (Outro) — Fallout</option><option value="b1">Weight of The World — Bleed in Gold EP</option><option value="b2">Tell Me — Bleed in Gold EP</option><option value="b3">Phoenix Rising — Bleed in Gold EP</option><option value="b4">I Still Said It — Bleed in Gold EP</option><option value="b5">The Weight of Quiet — Bleed in Gold EP</option><option value="b6">Bleed in Gold — Bleed in Gold EP</option>
+  </select>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="lyrics-layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+<div class="sidebar-album">
+  <div class="sidebar-album-name">Fallout</div>
+  <button class="sidebar-song" onclick="showSong('bp')">Breaking Point</button>
+  <button class="sidebar-song" onclick="showSong('s2')">Rising From The Ashes</button>
+  <button class="sidebar-song" onclick="showSong('s3')">Climbing Higher</button>
+  <button class="sidebar-song" onclick="showSong('s4')">Whole</button>
+  <button class="sidebar-song" onclick="showSong('s5')">Mary-Anne</button>
+  <button class="sidebar-song" onclick="showSong('s6')">6AM</button>
+  <button class="sidebar-song" onclick="showSong('s7')">Fate</button>
+  <button class="sidebar-song" onclick="showSong('s8')">I Own The Night</button>
+  <button class="sidebar-song" onclick="showSong('s9')">Broken</button>
+  <button class="sidebar-song" onclick="showSong('s10')">The Fortress</button>
+  <button class="sidebar-song" onclick="showSong('s11')">Twist and Weave</button>
+  <button class="sidebar-song" onclick="showSong('s12')">Fractured Lines</button>
+  <button class="sidebar-song" onclick="showSong('s13')">The Fray</button>
+  <button class="sidebar-song" onclick="showSong('s14')">Remember The Lake</button>
+  <button class="sidebar-song" onclick="showSong('s15')">No More Silence (Outro)</button>
+</div>
+<div class="sidebar-album">
+  <div class="sidebar-album-name">Bleed in Gold EP</div>
+  <button class="sidebar-song" onclick="showSong('b1')">Weight of The World</button>
+  <button class="sidebar-song" onclick="showSong('b2')">Tell Me</button>
+  <button class="sidebar-song" onclick="showSong('b3')">Phoenix Rising</button>
+  <button class="sidebar-song" onclick="showSong('b4')">I Still Said It</button>
+  <button class="sidebar-song" onclick="showSong('b5')">The Weight of Quiet</button>
+  <button class="sidebar-song" onclick="showSong('b6')">Bleed in Gold</button>
+</div>
+  </div>
+
+  <!-- SONG PANELS -->
+  <div class="song-panels">
+    <div class="song-panel active" id="song-bp">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Breaking Point</h2>
+        <a href="https://www.youtube.com/watch?v=fvZ0E2EL11c&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>It doesn't start with silence. It starts with an explosion.</p><p>The story begins at a moment where the protagonist has already been under pressure for a long time. We don't see the beginning of the trauma — we see its consequence.</p><p>"I've had enough of this" is not the first argument. It's the last one.</p><p>Breaking Point is the moment where gaslighting has gone on too long, control has become normal, silence has been a survival mechanism — and identity has quietly crumbled. This is not the beginning of trauma. This is the beginning of resistance.</p><p>Psychologically, the protagonist is not yet strong. They are full of rage. And rage acts as a wake-up call. Pain turns into action. Fear turns into energy.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I've had enough of this,
+Tired of fighting, tired of the twist.
+Every word you said cuts like a knife,
+I'm stuck in this chaos, torn from life.
+No more silence, no more lies,
+I see through your games, I see your disguise.
+My mind's a prison, I'm breaking out,
+Can't hold me down, I'm screaming now!
+
+You pushed me to the edge, now I'm on fire,
+I'm running from the wreckage, building my desire.
+You can't control me, you can't hold me tight,
+This is the moment I fight back tonight!
+
+I'm at the breaking point, no turning back,
+This is my rebellion, I'm taking what I lack.
+I'll rise from the ashes, I'll burn this world,
+I'm done with your lies, I'm done being swirled.
+
+I'm not your puppet, not your toy,
+I'm breaking free, can't destroy.
+You tried to silence me, tried to cage my soul,
+But now I'm louder, I'm taking control.
+My anger's the fuel, I'm fed up with the pain,
+I'll drown in the noise, let it wash away the shame.
+This is my time, no more holding back,
+I'm done with your rules, I'm never looking back.
+
+You pushed me to the edge, now I'm on fire,
+I'm running from the wreckage, building my desire.
+You can't control me, you can't hold me tight,
+This is the moment I fight back tonight!
+
+I'm at the breaking point, no turning back,
+This is my rebellion, I'm taking what I lack.
+I'll rise from the ashes, I'll burn this world,
+I'm done with your lies, I'm done being swirled.
+
+I won't break, I won't fall,
+I'll stand tall through it all.
+You'll never win, I'll never break,
+This war's mine, this is my fate!
+
+I'm at the breaking point, no turning back,
+This is my rebellion, I'm taking what I lack.
+I'll rise from the ashes, I'll burn this world,
+I'm done with your lies, I'm done being swirled.
+
+You thought you had me, but I'm stronger now,
+I'm rising up, I'll show you how.
+I'm at the breaking point, I won't back down,
+This is my victory, I'm taking the crown!</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s2">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Rising From The Ashes</h2>
+        <a href="https://www.youtube.com/watch?v=lQhFsnSw9qs&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=2" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>In Breaking Point, the protagonist screamed. Here, they stand upright.</p><p>But there's an important distinction: this is no longer just about "you" who caused the pain. Now it's about identity.</p><p>"I'm not the same, I've changed the game" — this is the moment the protagonist begins to build a new self.</p><p>This is the classic second stage of survival. A person recovering from trauma often goes through this: "You can't hurt me anymore." "I am in control." "I will win." It is real strength — but there is still hardness in it.</p><p>The song speaks of power, of crowns, of reclaiming control, of the war continuing. "This war's far from over" — the battle is not finished. It has only just begun.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I'm not the same, I've changed the game,
+You tried to break me, but I'm not the same.
+I'm walking through the fire, but I won't burn,
+The lessons that I've learned, now it's my turn.
+You can't silence me, can't make me fade,
+I've built my empire from the pain you've made.
+You pushed me down, now I'm on my feet,
+This war's far from over, this fight's incomplete!
+
+You thought I'd crumble, you thought I'd fall,
+But I'm rising higher, breaking down the walls.
+You can't control me, can't drag me down,
+I'm the king now, I'm taking the crown!
+
+I'm rising from the ashes, can't you see?
+I'm the storm that's coming, setting me free.
+I'm done with your chains, I'm done with the fight,
+I'm taking over, I'm stepping into the light!
+
+You thought you'd win, but I'm still standing strong,
+Your lies were weak, my resolve's been long.
+You can't break me, no matter how you try,
+I'm a warrior, don't even question why.
+I'm breaking the chains that you tried to bind,
+Your grip is slipping, I'm leaving you behind.
+You thought you had control, you thought you had it all,
+But now you're watching me rise, while you start to fall.
+
+You thought I'd crumble, you thought I'd fall,
+But I'm rising higher, breaking down the walls.
+You can't control me, can't drag me down,
+I'm the king now, I'm taking the crown!
+
+I'm rising from the ashes, can't you see?
+I'm the storm that's coming, setting me free.
+I'm done with your chains, I'm done with the fight,
+I'm taking over, I'm stepping into the light!
+
+I've been through the hell, but I've learned to fight,
+I've found my strength, I've seen the light.
+I won't stop, I won't back down,
+I'm taking what's mine, I'm wearing the crown!
+
+I'm rising from the ashes, can't you see?
+I'm the storm that's coming, setting me free.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s3">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Climbing Higher</h2>
+        <a href="https://www.youtube.com/watch?v=0r2bBTMTDcY&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=13" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>Breaking Point was the explosion. Rising From The Ashes was the declaration: "I will rise." Climbing Higher is the decision: "I will stay up there."</p><p>At this point, the protagonist is no longer just reacting. They have fully embraced the role of a fighter. "I've claimed my place — now I'm in control." Control is the central word of the entire album. At the beginning it was taken away. Now it is reclaimed — consciously.</p><p>This is the peak of overcompensation. The character has built armour, learned to stand alone, and is ready to strike if threatened. "I'm on the attack." No longer just defending — now ready to dominate.</p><p>This reveals two things: the strength has grown — but vulnerability is still feared.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I've stood in the fire and came out unscathed,
+Every mark I carry shows the price I've paid.
+You tried to crush me, fade me into dust,
+But I rose from the ruins, I shattered your trust.
+I broke through the silence, ripped down the walls,
+Turned every setback into battle calls.
+Your lies can't bind me, I've locked them away,
+This is my moment — I won't fade away.
+
+I'm climbing higher, nothing holds me back,
+I've got the lead, I'm on the attack.
+You tried to stop me, tried to steal my soul,
+But I've claimed my place — now I'm in control.
+
+The storm has cleared, but I'm still on guard,
+You played your game, but I raised the bar.
+Every step I take, the echo grows loud,
+I'm the shadow you feel when you stand too proud.
+
+You threw your fire — I didn't burn,
+Held my line through every turn.
+I built this strength with every hit,
+Now I'm closing in — won't quit, won't sit.
+
+You thought I'd fold, you thought I'd fade,
+But I'm made of steel, you misread the play.
+You can't chain me down, I've stoked my flame,
+Rewrote the script — I'll never be the same.
+
+I'm climbing higher, nothing holds me back,
+I've got the lead, I'm on the attack.
+You tried to stop me, tried to steal my soul,
+But I've claimed my place — now I'm in control.
+
+I've braved the flames, I've stood through storms,
+I've learned to bend without breaking form.
+I won't step back, I won't fade away,
+I've cut my path — I'll lead the way.
+
+I'm climbing higher, nothing holds me back,
+I've got the lead, I'm on the attack.
+You tried to stop me, tried to steal my soul,
+But I've claimed my place — now I'm in control.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s4">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Whole</h2>
+        <a href="https://www.youtube.com/watch?v=grgqz8J6n20&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=8" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>This song takes us back to childhood. No father's voice. A mother too blind to see. No safety. No guidance. Learning to survive alone.</p><p>This is the moment we understand why control, abandonment and silence hurt so deeply in the other songs. Because they weren't new. They were familiar.</p><p>Whole reveals that the first three songs are not just empowerment — they are defence mechanisms. When a child receives no safety, they build walls, learn to fight, and come to believe no one is coming to save them.</p><p>But then something new happens. For the first time in the entire story, strength does not come from anger. It comes from love.</p><p>"You made me feel like I'm finally whole." This is a massive shift. In the first three songs, the message was: I survive alone. Here, for the first time, someone else is allowed in.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">Shadows fell where I used to hide,
+A heart left broken, too scared to fight.
+No guiding hand, no place to call home,
+Just a little girl, learning to be alone.
+
+Pieces scattered, lost in the dark,
+Tried to numb the pain, but it left its mark.
+No father's voice, no warmth to hold,
+Just a heavy heart growing tired and cold.
+
+I never hoped that love could heal my soul,
+But you made me feel like I'm finally whole.
+I stand here stronger, though I still bleed,
+With you, I found everything I need.
+
+Every lie left a ghost in my mind,
+A past that haunts, a truth hard to find.
+A cruel touch, words meant to tear,
+I built my walls 'cause no one was there.
+
+I learned to fight with no one on my side.
+Buried my tears, learned how to hide.
+But through the wreckage, somehow I knew,
+There had to be more, and then came you.
+
+I never sought saving, just to be seen,
+A love that could hold both the dark and the dream.
+My father was gone, my mother too blind,
+They never taught me how to survive.
+
+I never hoped that love could heal my soul,
+But you made me feel like I'm finally whole.
+I stand here stronger, though I still bleed,
+With you, I found everything I need.
+
+No perfect ending, no fairy-tale sign,
+Just a broken heart learning to shine.
+I don't dream that love could fix the pain,
+But with you, I'm standing in the rain.
+
+Through every storm, you never let go,
+A perfect man in a world so cold.
+A perfect man in a world so cold.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s5">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Mary-Anne</h2>
+        <a href="https://www.youtube.com/watch?v=rAO9GWJY6Cc&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=11" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>This song tells how trauma does not define us alone. The people who loved us remain as an inner voice.</p><p>"She's not gone, she's in my veins." Mary-Anne is not just a person who was lost. She is an internal moral compass.</p><p>When we later see fatherhood, love, backbone, the ability to rise — their roots are here.</p><p>For the first time on the album, anger is not at the centre. Victory is not at the centre. Control is not at the centre. At the centre is grief. But not a destructive grief. A grief that shapes a person.</p><p>Mary-Anne is the quiet turning point of the whole story — the moment we understand that the protagonist carries something worth protecting.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I still hear her voice in the quiet rain,
+A whisper that cuts through the deepest pain.
+Her laughter's gone but it echoes here,
+A ghost in the shadows pulling me near.
+
+She said be strong even when you're weak,
+The light you need is the one you seek.
+But it's hard to fight when the world turns black,
+I'm holding on but I can't bring her back.
+
+Her words still haunt me, they keep me alive,
+A lesson burned like fire inside.
+Every step I take she's guiding me,
+In the dark she's the light I see.
+
+She's not gone, she's in my veins,
+Her voice in the wind, her love in my chains.
+Every breath I take she's part of me,
+In every moment she'll always be free.
+
+She taught me strength when the nights were long,
+To find my voice when I felt all wrong.
+But now I'm screaming into the void,
+Her absence leaves me torn and destroyed.
+
+I see her smile in the setting sun,
+Feel her warmth when the day is done.
+She's the reason I stand when I want to fall,
+Her spirit's alive, it's part of it all.
+
+Her words still haunt me, they keep me alive,
+A lesson burned like fire inside.
+Every step I take she's guiding me,
+In the dark she's the light I see.
+
+She's not gone, she's in my veins,
+Her voice in the wind, her love in my chains.
+Every breath I take she's part of me,
+In every moment she'll always be free.
+
+Don't let the pain define who you are,
+Keep chasing your dreams no matter how far.
+Her voice is a shadow that holds me tight,
+A memory burned in my eternal light.
+
+She's not gone, she's in my veins,
+Her voice in the wind, her love in my chains.
+Every breath I take she's part of me,
+In every moment she'll always be free.
+
+I carry her lessons, her love, her fight,
+Her strength is the flame that keeps me alive.
+She's not gone, she's here with me,
+Through her I've learned what it means to be free.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s6">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">6AM</h2>
+        <a href="https://www.youtube.com/watch?v=pXc3lZoA8E0&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=7" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>At this point in the story, the protagonist is no longer fighting for themselves alone.</p><p>They stand for three small people who are counting on them. Rebellion has become responsibility.</p><p>Psychologically this is a turning point: survival becomes purpose. In earlier songs, strength was a reaction. Here it is a choice.</p><p>Anger is not at the centre. Neither is the need to prove anything. At the centre is love — the kind that forces you to grow.</p><p>The protagonist is no longer just someone things were done to. They have become someone who builds safety for others.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">It's six AM, another day begins,
+Three little faces counting on him.
+The world keeps saying "He'll never get through"
+But they don't know what a father can do.
+
+They whisper doubt, say he's bound to fall,
+But they don't see he's giving his all.
+His heart beats louder with every cry,
+For his kids, he'll reach the sky.
+
+They're the reason he stands, the fire in his soul,
+Through the storm and the struggle, they make him whole.
+He's breaking the odds, they're his light to survive,
+All he ever needed was them to thrive.
+
+He's the hero at bedtime, the cook at dawn,
+Building a home where love lives on.
+They say he's too broken, they say he's too small,
+But they don't see he's giving it all.
+
+Little footsteps echo through the hall,
+Every laugh reminds him why he won't fall.
+He wears the weight like a badge on his chest,
+For them, he'll never settle for less.
+
+The world can judge, let them cast their doubt,
+He's showing them all what love's about.
+Every hurdle, every tear he's cried,
+His strength is them, they're his guide.
+
+They're the reason he stands, the fire in his soul,
+Through the storm and the struggle, they make him whole.
+He's breaking the odds, they're his light to survive,
+All he ever needed was them to thrive.
+
+They're the reason he stands, the fire in his soul,
+Through the storm and the struggle, they make him whole.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s7">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Fate</h2>
+        <a href="https://www.youtube.com/watch?v=h9feYFmHMcU&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=9" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>This is a quieter chapter in the story. It reveals where the backbone truly came from.</p><p>In the middle of all the chaos, there was structure. Someone taught discipline. Someone taught how to hold the line.</p><p>Psychologically this song says that survival was not accidental — it was taught. It was not a warm upbringing, but it gave the tools to endure.</p><p>This explains why the protagonist never fully collapsed. There was always something firm underneath — not warmth, but structure. Not love, but order.</p><p>In the story, Fate is the silent foundation beneath every act of defiance that came before it.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I walked through days where rules were few,
+You taught me discipline, a path so true.
+He showed me order, a steady hand,
+A life of structure, firm as the land.
+
+She gave me wisdom in the quiet of dawn,
+Taught me to rise when everything was gone.
+I learned to bend without ever breaking,
+In a world where nothing felt worth saving.
+
+While they all vanished, you stayed the same,
+In the silence, you never played the game.
+They couldn't guard me, but you held the gate,
+In your stillness, I found my fate.
+
+You were the ones who never left me behind,
+When the others were blind, you made me find
+A place where I didn't need to scream—
+You taught me to survive, but not to dream.
+
+The others slipped away, like dust in the wind,
+But you held on, always let me in.
+You gave me words when silence turned cold,
+In your calm, I never felt alone, never sold.
+
+I stood alone, but you showed me where,
+In your stillness, you were always there.
+I never begged for shelter or grace,
+But you gave me both, without asking for praise.
+
+While they all vanished, you stayed the same,
+In the silence, you never played the game.
+They couldn't guard me, but you held the gate,
+In your stillness, I found my fate.
+
+You were the ones who never left me behind,
+When the others were blind, you made me find
+A place where I didn't need to scream—
+You taught me to survive, but not to dream.
+
+He taught me rules, kept me in line,
+A steady hand, a force so fine.
+She showed me strength in questioning right,
+Taught me to challenge, to fight the fight.
+
+The world keeps turning, but you remain still,
+When you're gone, I'll feel the chill.
+The lessons you gave, they never fade,
+And in your absence, I'll carry your shade.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s8">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">I Own The Night</h2>
+        <a href="https://www.youtube.com/watch?v=U4F9pzPRT8Q&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=6" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>Here we return to the darkness. Love turns into control. The voice is stolen. Identity crumbles.</p><p>But this time, the protagonist does not stay.</p><p>Psychologically this is the long phase of recovery: letting go, rebuilding the self, relearning one's own worth. It is not a screaming rebellion — it is years of slow detachment.</p><p>In the end, they do not just escape. They choose life.</p><p>"I chose to live, I chose to fight. No longer your shadow, I own the night." This is not a victory shout. It is a quiet, earned declaration.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">It started with a spark, a fire in my chest,
+Every word you said felt like I was blessed.
+A love so bright, I couldn't see the lies,
+Lost in the depths of your hollow eyes.
+
+The walls closed in as your mask slipped away,
+A prisoner in love, drowning in dismay.
+You held the keys, they cut through the night,
+Etching deep scars, till they lost their might.
+
+You stole my voice, locked me inside,
+Told me I'm nothing, shattered my pride.
+I reached for light, but the dark pulled tight,
+Alone in the silence, fading from sight.
+
+But your grip grew weak as I broke your chains,
+Then I rose through the fire, unshaken, untamed.
+
+Screaming echoes through the hollow halls,
+A thousand cries lost in endless walls.
+I wished you'd vanish, let the torment cease,
+But you just smiled, feeding off my grief.
+
+I begged for a chance, but you left me cold,
+You raised me high, then dragged me down.
+I reached for salvation, but it slipped away,
+Trapped in your shadows, I withered away.
+
+You stole my voice, locked me inside,
+Told me I'm nothing, shattered my pride.
+I reached for light, but the dark pulled tight,
+Alone in the silence, fading from sight.
+
+But your grip grew weak as I broke your chains,
+Then I rose through the fire, unshaken, untamed.
+
+It took years of pain and tears to mend,
+To break the spell, to find my end.
+I'm worthy of love, of a life untamed,
+And nothing of you will haunt me again.
+
+I chose to live, I chose to fight,
+No longer your shadow, I own the night.
+Ashes remain where the love once grew,
+From ruin, I rose — reborn and anew.
+
+No longer your shadow, I own the night.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s9">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Broken</h2>
+        <a href="https://www.youtube.com/watch?v=byvw4PENCzQ&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=5" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>This is the album's lowest point. Addiction. Self-destruction. Emptiness.</p><p>In the story, the perspective widens — trauma is not just one person's experience. It is a cycle.</p><p>Psychologically this song shows what happens when pain is not faced. It does not disappear. It finds another way out — through the body, through substances, through numbness.</p><p>This is the shadow that runs alongside the entire album. Every act of strength in earlier songs existed alongside this possibility.</p><p>Broken is not a detour. It is the cost of survival without healing.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">She swallowed the darkness, let it take hold,
+A broken heart, a story untold.
+In the silence, she learned to drown,
+Falling deeper, never to be found.
+
+Nights turned to scars, each drink became a wound,
+She craved the poison, a bitter tune.
+Eyes wide open, yet all she could see,
+Was the shadow of a soul that couldn't be free.
+
+She was shattered, piece by piece,
+Torn apart, but never released.
+Buried in the dark, where no light could reach,
+Her soul was lost, forever out of reach.
+
+She no longer cared, she was done,
+A broken girl with nowhere to run.
+The nights were her chains, the liquor her key,
+She sought attention, but it didn't set her free.
+
+Crawling through the void, no escape,
+A hollow heart, trapped in its own shape.
+She played the game with broken hands,
+Searching for something that never stands.
+
+In the shadows, she sought the thrill,
+But in the end, it only made her ill.
+
+She no longer cared, she was done,
+A broken girl with nowhere to run.
+
+He shoved her down into the black,
+Told her she'd never find her way back.
+The pieces of her mind, scattered, torn,
+Left to rot in a place forlorn.
+
+She no longer cared, she was done,
+A broken girl with nowhere to run.
+
+Wasted nights, and days in disguise,
+She's fading fast, but won't realize.
+In her mind, she's lost the fight,
+Fears nothing will bring her back to the light.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s10">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">The Fortress</h2>
+        <a href="https://www.youtube.com/watch?v=Cptf9W7EMwo&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=14" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>Here the story turns inward. No shouting. No drama. Just a closed mind.</p><p>The protagonist builds an inner room where nothing can hurt anymore — but nothing truly lives either.</p><p>Psychologically this is dissociation. Safety bought at the price of feeling.</p><p>At this point we understand that strength can also isolate. The armour that protected now imprisons.</p><p>"Just thoughts I never let them know." The fortress is complete — and the protagonist is alone inside it.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I carved a place behind my stare,
+A distant room where none would care.
+Planted thoughts in barren ground,
+And waited there, without a sound.
+
+A restless head, a tethered spark,
+I taught my truth to hide in dark.
+No words to form what shouldn't show,
+So I withdrew to what I know.
+
+This is the fortress I designed,
+Where silence wraps around my mind.
+A burned-out field where thoughts ignite,
+And nothing wrong feels truly right.
+
+I walk alone in rooms I drew,
+Where pain's the only thing that grew.
+My pulse became a loaded gun,
+Each step a fuse that comes undone.
+
+I saw the world in targets, marks,
+A need that fed on bite and sparks.
+Their faces blurred into the need,
+Not love, not touch — just urge to feed.
+
+No room for names, no space for grace,
+Just silent rules I couldn't erase.
+
+This is the fortress I designed,
+Where silence wraps around my mind.
+A burned-out field where thoughts ignite,
+And nothing wrong feels truly right.
+
+I walk alone in rooms I drew,
+Where pain's the only thing that grew.
+
+I bit my tongue until it bled,
+Swallowed fire, turned gold to lead.
+They said, "stay calm," so I obeyed,
+And built a cage from what decayed.
+
+So I stay quiet, keep the grin,
+Let rot and static bloom within.
+No ending here, no final blow,
+Just thoughts I never let them know.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s11">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Twist and Weave</h2>
+        <a href="https://www.youtube.com/watch?v=m0xKNZOFGfM&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=10" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>This is an identity crisis.</p><p>The world feels like a lie. People feel like roles. Connection disappears. The protagonist stands on the outside — no longer a victim, but not yet fully free.</p><p>Psychologically this is depersonalisation and existential drifting. The armour built in The Fortress has worked too well — now even reality feels unreachable.</p><p>Yet something holds. "Yet still, I breathe — still, I stay." The wandering is real, but so is the stubborn refusal to vanish completely.</p><p>"Perhaps one day, I'll call it mine." A fragile, quiet hope. The first crack of light in the darkest stretch of the story.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">It lingers near, a weight so deep,
+A restless mind that never sleeps.
+It whispers doubt, it fuels my fears,
+A voice I've known for all these years.
+
+I reach for echoes lost in time,
+Chasing ghosts that were never mine.
+A heart that beats yet feels so numb,
+A silent song, forever unsung.
+
+I'm a shadow at the break of dawn,
+A fleeting thought — here, then gone.
+Wandering paths that twist and weave,
+A restless soul, too lost to leave.
+
+Their hollow smiles, their vacant eyes,
+A world of glass, a web of lies.
+They play their parts, recite their lines,
+Yet nothing real is left to find.
+
+I reach for warmth in endless grey,
+Fingers grasping, pulled away.
+A voice that speaks but makes no sound,
+A soul still searching, never found.
+
+I'm a shadow at the break of dawn,
+A fleeting thought — here, then gone.
+Wandering paths that twist and weave,
+A restless soul, too lost to leave.
+
+I'm the storm that never fades,
+Trapped inside my tangled maze.
+The world's a stage, a hollow play,
+Where truth gets lost in grand charades.
+
+Yet still, I breathe — still, I stay,
+Chained to thoughts that won't obey.
+And though I stand outside the line,
+Perhaps one day, I'll call it mine.
+
+I'm a shadow at the break of dawn,
+A fleeting thought — here, then gone.
+Wandering paths that twist and weave,
+A restless soul, too lost to leave.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s12">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Fractured Lines</h2>
+        <a href="https://www.youtube.com/watch?v=OxZtHyv9Ln0&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=3" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>Here we see a broken woman who refuses to be silent any longer.</p><p>In the story, this is the birth of a new voice. No one defines her anymore — not control, not shame, not the past.</p><p>Psychologically this is the dismantling of shame. Not through revenge. Through boundaries.</p><p>The difference from earlier songs is crucial: before, strength was about defeating someone else. Here, it is about reclaiming the self — quietly, firmly, finally.</p><p>"Not your puppet, not your shame — you don't get to say her name." Fractured Lines is not a battle cry. It is a line drawn in the ground.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">She wore silence like borrowed clothes,
+Woven tight with hidden oaths.
+Her steps were quiet, bruised by years,
+A walking frame of caged-up fears.
+
+Smiles were painted, cracks concealed,
+Truth was something never healed.
+She whispered prayers to empty rooms,
+Grew roots in corners thick with gloom.
+
+She hummed a tune no one could hear,
+Each note a mirror to her fear.
+You fucked her up, you pulled her down,
+Left her lost, no breath, no sound.
+
+But she drew strength from fractured lines,
+Built herself between the signs.
+No more masks, no more plea—
+She wears her scars instead of grief.
+
+He broke her trust like brittle thread,
+Left pieces where she used to tread.
+Taught her silence meant control,
+Buried sparks inside her soul.
+
+She drank the night, wore it well,
+Spoke in sighs she couldn't quell.
+But even ghosts can fade away—
+She learned to breathe and disobey.
+
+Her voice became a steady drum,
+A quiet storm she wouldn't run.
+You fucked her up, you pulled her down,
+Left her lost, no breath, no sound.
+
+But she drew strength from fractured lines,
+Built herself between the signs.
+No more masks, no more plea—
+She wears her scars instead of grief.
+
+She kissed the wounds you thought would last,
+Carved a path right through her past.
+Not your puppet, not your shame—
+You don't get to say her name.
+
+She doesn't flinch when shadows call,
+She built a spine out of it all.
+Not made to break, not born to yield—
+She leaves no room for what you were.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s13">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">The Fray</h2>
+        <a href="https://www.youtube.com/watch?v=Go6CeOPY554&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=12" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>This is the album's softest moment.</p><p>Love does not arrive to save dramatically — it stays. It remains. It gives time.</p><p>In the story, this is the first relationship where safety feels genuinely real. Not performed. Not conditional. It started with a joke, a dark question, a laugh — and it grew slowly, without pressure.</p><p>Psychologically this is a corrective experience: love without control. For the first time, the protagonist dares to lower the guard.</p><p>"You didn't just save me — you rebuilt me." After everything — the rage, the walls, the wandering — this is what healing actually looks like. Not a triumph. Just presence. Just staying.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I built my walls from fractured glass,
+Each step I took left a silent gasp.
+I spoke in whispers, screamed unseen,
+A mask of stone to hide what's been.
+
+They saw the surface, but not the war,
+The scars that linger, the ones I wore.
+I swore love was just a hollow lie,
+A whispered dream that fades to cry.
+
+But your hands held me when I fell,
+And taught me I was worth it all.
+I thought love was just a fleeting dream,
+Another mask behind a fading gleam.
+No warmth, no light, just endless grey,
+Until your voice broke through the fray.
+
+It started with a twisted joke,
+A smile beneath the shadow spoke.
+A question dark but filled with light,
+We laughed and stayed through endless nights.
+
+Through silent screens we built a spark,
+A bond that bloomed quiet but stark.
+You never rushed, you gave me time,
+And slowly you rewrote my rhyme.
+
+Now I am safe with you,
+Where silence fades to air.
+You gave me life I never knew,
+Pulled me from despair.
+
+I thought love was just a fleeting dream,
+Another mask behind a fading gleam.
+No warmth, no light, just endless grey,
+Until your voice broke through the fray.
+
+You healed the wounds you never made,
+You never asked for tears, nor turned away.
+You stood through the wreckage, met my ghosts,
+And held me when the hurt came close.
+
+You are my reason, my fight, my truth—
+I am finally living, and it's all for you.
+You're the strength when I am breaking,
+The hand that guides me through.
+I'm no longer lost — I'm finally something true.
+
+You didn't just save me — you rebuilt me,
+And that was enough to set me free.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s14">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">Remember The Lake</h2>
+        <a href="https://www.youtube.com/watch?v=H0mD_v44X8U&list=PLbTDGOn1mG6AgUqxYrx3Btq1nCarDesep&index=4" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>The story ends in silence.</p><p>Two sisters. Ashes on the water. No shouting. No fighting. A memory that connects.</p><p>Psychologically this is acceptance. Not a perfect healing. Not a happy ending. But an understanding: the pain travels with you — it just no longer leads.</p><p>One final stone into the deep. A silent vow. Two different souls, the same bloodline.</p><p>Remember The Lake is the whole album in one breath. Everything that was survived, everything that was lost, everything that remains. Still here. Still breathing. Still whole enough.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">She wakes up late, sunlight in her hair,
+Phone buzzing loud, but she doesn't care.
+Another party, another scene,
+But something breaks in the space between.
+
+She finds an old box beneath her bed,
+Photos and notes that their father had said.
+And there it is, in faded ink—
+"Remember the lake, and how we'd sink..."
+
+Skipping stones across the blue,
+Laughing like the world was new...
+The lake was ours, a world away,
+Where silence spoke what we couldn't say.
+Time moved on, but we stood still,
+Two hearts apart, and always will.
+But in that place, we always knew—
+There's something deeper holding true.
+
+Books on the floor, candlelight burns,
+She reads his words in the margins and learns.
+Alone by choice, but sometimes not,
+She hides in pages, but never forgot.
+
+A smooth white stone sits on her desk,
+She runs her fingers over it like a test.
+And in her mind, she's twelve again—
+Water so cold, the summer rain.
+
+Skipping stones across the blue,
+One for him, and one for you...
+The lake was ours, a world away,
+Where silence spoke what we couldn't say.
+Time moved on, but we stood still,
+Two hearts apart, and always will.
+But in that place, we always knew,
+There's something deeper holding true.
+
+She stands at the shore, ashes in hand,
+The other appears, feet in the sand.
+No words exchanged, just heavy air,
+The ripples know that they both care.
+
+One final stone into the deep,
+A silent vow they both will keep.
+The man they lost, the bond they find,
+Two different souls, the same bloodline.
+
+The lake was ours, still remains,
+Through every joy, through every pain.
+The world moves on, but we return,
+To let the water heal and burn.
+Different hearts, but the same sky,
+Sisters standing side by side...</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-s15">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Fallout · 2024</div>
+        <h2 class="song-title">No More Silence (Outro)</h2>
+        <a href="https://www.youtube.com/watch?v=tIi_QzywsN4" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>The album ends with the same cry it began with. But the meaning is no longer the same.</p><p>At the start, the shout was reactive — a burst of emotion, pain turning into noise. Here, it is a conscious decision.</p><p>After everything: the childhood wound, the loss, the toxic love, the shadow of self-destruction, the fortress, the learning to love, the acceptance of grief — the protagonist says again: No more silence.</p><p>It means something different now. No longer hiding the past. No longer protecting those who caused harm. No longer swallowing feelings to keep the peace.</p><p>Fallout begins at a breaking point. It ends with a deliberate voice. Silence was the greatest enemy. And at the end, it is broken — not in rage, but in truth.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I've had enough of this,
+Tired of fighting,
+Tired of the twist.
+Every word you said
+Cuts like a knife,
+I'm stuck in this chaos,
+Torn from life.
+
+No more silence,
+No more lies,
+I see through your games,
+I see through your games.
+
+Sick of the crying,
+I want to say goodbye,
+But the fear keeps me up at night.
+'Cause I'm stuck in this mess,
+Nowhere to run,
+Nothing to confess,
+And nowhere to hide.
+
+No more silence,
+No more lies,
+I see through your games,
+I see through your games.
+
+You need to know,
+You need to know,
+You need to know,
+You need to know.
+
+No more silence,
+No more lies,
+I see through your games,
+I see through your games.
+
+No more silence,
+No more lies,
+I see through your games,
+I see through your games.</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-b1">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Bleed in Gold EP</div>
+        <h2 class="song-title">Weight of The World</h2>
+        <a href="https://www.youtube.com/watch?v=j3Adp86jFPI&list=PLbTDGOn1mG6D0umUQ7KTwWVuFhC2LK_gs&index=5" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>This is the opening wound of the EP. A person who has spent their entire life carrying responsibilities they never chose — built their own cage, brick by brick, and called it duty.</p><p>The world didn't just fall on them. They were told to hold it. Told it was their place. And they believed it, until the belief started to cost them everything: their soul, their peace, their sense of self.</p><p>Psychologically this is the exhaustion of the high-functioning person who never gets to break down — because the world expects them to carry on. Every battle fought alone. Every crack hidden behind a mask.</p><p>"Am I the man I thought I would be?" That question doesn't come from weakness. It comes from someone who gave everything and still ended up lost.</p><p>The EP begins here — at the edge of a person who has finally run out of strength to pretend they're fine.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I've carried this burden it never fades
+The weight of a world that I never made
+I've built my own prisons stone by stone
+Fighting battles that I fight alone
+
+You say it's my duty it's my place
+To wear this mask and show my face
+But deep in my chest I feel the strain
+It's all a game I've lost again
+
+The echo of whispers the screams in my mind
+Telling me to break that I'm out of time
+No choice but to follow no way to rest
+Trapped in the cycle I give my best
+
+I carry the weight I carry the shame
+All for the glory all for the name
+I break and I bleed but it's all in vain
+The weight of the world it's all the same
+
+I carry the weight I carry the pain
+But in the end I'm the one to blame
+I give and I fall but I'm not the same
+The weight of the world it's all the same
+
+You told me to rise that I had to fight
+But I'm tired of chasing what's out of sight
+Every day's a battle but no one sees
+The price I pay for what I don't need
+
+It's more than survival it's more than the grind
+The cost is my soul my peace of mind
+I've played every part been every man
+But now I'm lost don't know where I stand
+
+I carry the weight I carry the shame
+All for the glory all for the name
+I break and I bleed but it's all in vain
+The weight of the world it's all the same
+
+Am I the man I thought I would be?
+Chasing shadows just to be free
+But the price is too high I can't afford it
+I gave everything and it's still not worth it
+
+The weight of the world
+The weight of the world
+It's all the same</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-b2">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Bleed in Gold EP</div>
+        <h2 class="song-title">Tell Me</h2>
+        <a href="https://www.youtube.com/watch?v=DKRjaAHX76Q&list=PLbTDGOn1mG6D0umUQ7KTwWVuFhC2LK_gs" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>A shift in perspective. For the first time, someone else is watching — and they see everything the protagonist tries to hide.</p><p>This is a song about the person who stays. Who notices the weight behind the half-smile, the storm inside the silence, the way someone's shoulders carry what their voice won't say.</p><p>It is not a rescue. It is an invitation. "Let me hold what your heart can't take." Not a demand, not a fix — just a presence that refuses to be fooled by "I'm fine."</p><p>Psychologically this is the counter to the isolation of Weight of The World. There, the protagonist fought alone. Here, someone breaks through that wall not with force, but with attention and love.</p><p>Tell Me is the EP's most tender moment — the quiet argument that vulnerability is not weakness, and that being truly seen is not a threat.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">You wear your silence like a tailored coat
+Lined with words you never meant or spoke
+But I see the way your shoulders bend
+Like you're holding storms you'll never send
+
+I notice sighs tucked in your breath
+The way your smile feels close to death
+You're a lighthouse dimmed in your own sea
+But your shadows still speak loud to me
+
+You say you're okay with that half-fake grin
+But I see the war you're waging within
+I hope you'd tell me when it's hard to breathe
+When the weight is heavy underneath
+
+Don't say "I'm fine", don't hide the ache
+Let me hold what your heart can't take
+I hope you'd tell me, just once—be real
+Let me love what you try to conceal
+
+You're the kind who builds a fortress high
+With bricks of pain and steel-laced pride
+But every crack—I see it glow
+Like secret doors you don't yet know
+
+I'd walk through fire just to find
+The pieces of your peace of mind
+You don't need to bleed to prove you're tough
+Even iron rusts when it's had enough!
+
+You don't have to bleed in battles alone
+Let me be your quiet, your softer tone
+I see the ache you never name
+But I'd still love you just the same
+
+Let me love what you try to conceal...</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-b3">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Bleed in Gold EP</div>
+        <h2 class="song-title">Phoenix Rising</h2>
+        <a href="https://www.youtube.com/watch?v=2hWspnRGSBY&list=PLbTDGOn1mG6D0umUQ7KTwWVuFhC2LK_gs&index=3" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>The fire strikes back. After the exhaustion of Weight of The World and the quiet tenderness of Tell Me, the protagonist finds something burning inside them again.</p><p>But this is not the raw, reactive rage of Fallout's Breaking Point. This is a different kind of fire — one that was forged in pain and has come out the other side as something unbreakable.</p><p>Every attempt to shatter them has failed. Every lie has been outlasted. And now the protagonist stands in the ruins of what tried to destroy them, and rises.</p><p>Psychologically this is integration — not just surviving, but becoming. "Every wound a story, I've survived it all." The scars are not erased. They are claimed.</p><p>Phoenix Rising is the EP's declaration: I am not what was done to me. I am what I chose to become from the ashes of it.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I've walked this road through shadows and pain
+You tried to drown me but I've broken the chain
+Every scar I wear a badge of my fight
+The darkness tried to claim me but I found my light
+
+In the silence I hear your name
+A haunting echo in the pouring rain
+But I won't falter I won't fall
+I'll rise above I'll take it all
+
+You thought I'd shatter you thought I'd break
+But I've become stronger with every mistake
+The fire in my soul burns brighter tonight
+I'm unstoppable now stepping into the fight
+
+I'm the phoenix rising can't you see?
+Your chains are broken you can't tether me
+Wings of fire I'll take the sky
+Through the ashes I learn to fly
+
+I won't bow I won't retreat
+Every step I take makes me complete
+This is my rebirth this is my hour
+
+Now you see me standing tall
+Every wound a story I've survived it all
+The symphony ends but my song remains
+A triumph born from the deepest pains</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-b4">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Bleed in Gold EP</div>
+        <h2 class="song-title">I Still Said It</h2>
+        <a href="https://www.youtube.com/watch?v=J-gn5WUYE3o&list=PLbTDGOn1mG6D0umUQ7KTwWVuFhC2LK_gs&index=2" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>The EP's quietest and most devastating moment. Someone is gone — and all that remains are the words that were never spoken in time.</p><p>Not anger. Not defiance. Just grief in its purest form: the haunting realisation that the most important things were left unsaid, and now there is no one left to say them to.</p><p>The coat in the hallway. The creaking floorboard. The blurred photo. These are not poetic devices — they are the real, specific textures of loss that anyone who has grieved will recognise instantly.</p><p>Psychologically this is unresolved grief turned into a ritual. Speaking anyway. Saying it into the silence because not saying it is unbearable.</p><p>"You can't hear me now but I still said it." That line carries the whole song. It is not about being heard. It is about the need to say the truth, even when it's too late — because love doesn't stop at the border of death.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I found your coat in the back of the hall
+Dust on the sleeves like time took it all
+The scent is faint but it pulled me in —
+To a world we had to what could've been
+
+I still talk to you when the night gets cold
+Say your name like a secret I never told
+I reach through dreams just to hold your face
+But morning comes and it all gets erased
+
+If I had one more breath to spend
+I'd use it all to say again
+These are the things I never said
+Echoes that haunt this hollow bed
+
+A thousand words left in my chest —
+Too late to speak too soon to rest
+You can't hear me now but I still said it
+I still said it
+
+Letters unsent calls never made
+All of my silence all of my shame
+You deserved more I held it in —
+Now I cry for what could've been
+
+These are the things I never said
+Screaming inside this heavy head
+I trace your name in the fog and rain —
+But nothing brings you back again
+
+You can't hear me now but I still said it
+I still said it
+I still said it
+Just in case you hear
+I still said it</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-b5">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Bleed in Gold EP</div>
+        <h2 class="song-title">The Weight of Quiet</h2>
+        <a href="https://www.youtube.com/watch?v=ZfA8bfvanqA&list=PLbTDGOn1mG6D0umUQ7KTwWVuFhC2LK_gs&index=4" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>People see the calm. They call it strength. They have no idea what it cost.</p><p>This song peels back the surface of the composed person and reveals what lives underneath: a storm that was never allowed to exist, a rage that was swallowed so many times it became silence, a peace that is really just absence.</p><p>"They said: you're so strong. I never said: I had no choice." That is the heart of the song. Composure that looks like resilience was actually survival. There was no other option.</p><p>Psychologically this is the hidden cost of emotional suppression. The person who never breaks down is not necessarily the person who is okay. Sometimes they are the person who learned, very early, that breaking down was not safe.</p><p>The Weight of Quiet is the EP turning inward — not shouting, not burning, just sitting with the truth that some pain is too heavy to make noise about.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I learned the taste of silence
+Like iron on my tongue
+When words were weapons
+And no one cared to listen
+
+I grew from the echo of screams
+That only I could hear
+Turned them into whispers
+So I could say
+I'm not afraid
+Though I still was yesterday
+
+They said: You're so strong
+I never said: I had no choice
+They saw the calm
+But never the war that I buried so deep inside
+
+Nobody will ever understand
+How much pain and anger I went through
+To become this calm and quiet
+
+I stitched my breath with broken thread
+Wrapped silence around the dead
+And you call it peace
+But it was absence in disguise
+
+I sit here in the quiet
+Where the rage still hides beneath
+Gritting teeth I wear a smile
+That doesn't reach my eyes
+
+The storm is buried deep
+But it's never really gone
+And though you call it peace
+It's just the weight of what's undone</pre>
+        </div>
+      </div>
+    </div>
+    <div class="song-panel" id="song-b6">
+      <div class="song-panel-header">
+        <div class="song-album-tag">Bleed in Gold EP</div>
+        <h2 class="song-title">Bleed in Gold</h2>
+        <a href="https://www.youtube.com/watch?v=TiiqNQeVE-c&list=PLbTDGOn1mG6D0umUQ7KTwWVuFhC2LK_gs&index=6" target="_blank" class="yt-btn">▶ Watch on YouTube</a>
+      </div>
+      <div class="song-body">
+        <div class="song-story">
+          <div class="col-label">The Story</div>
+          <div class="story-text"><p>The EP's title track is its most brutal and honest moment. Everything that was held together across five songs finally cracks open here.</p><p>This is not a triumphant closer. It is a confession. A person asking what they did to deserve this weight, what it would feel like to breathe as someone — anyone — else, and whether the fighting will ever actually end.</p><p>"I'll bleed in gold before I bend in shame." The line sounds defiant. But the last line of the entire EP tells a different truth: "Tonight... I might just bend."</p><p>Psychologically this is the moment when the armour finally shows its cracks — not in rage, not in grief, but in exhausted honesty. The person who carried everything is asking, quietly, whether any of it was worth it.</p><p>The EP does not end with a resolution. It ends with a question mark. And that is exactly right — because real survival is not a neat finish line. It is the daily choice to keep going, even on the nights when bending feels inevitable.</p></div>
+        </div>
+        <div class="song-lyrics">
+          <div class="col-label">Lyrics</div>
+          <pre class="lyrics-text">I'll bleed in gold before I bend in shame
+But the cracks in me whisper my name
+My demons, demons, demons
+Crawling back beneath my skin
+Dragging me to where the dark begins
+
+No strength left, no start, no end
+They crave to tear me limb from limb
+And I'm so tired of the war within
+
+Are there gods that hear the cries
+Of those who scream with silent eyes?
+I want to scream at the sky — enough!
+I've carried more than flesh and blood
+
+What did I do to earn this chaos?
+Just once, I want to breathe as someone else
+'Cause being me is a cage built in hell
+
+I drag my shadow through broken glass
+Each step a prayer that this pain won't last
+Hope is a ghost I can barely feel
+My soul screams truths I try to conceal
+
+No medals for surviving
+No crown for enduring
+Only the weight of breath
+And the ache of continuing
+
+Take these thoughts — set fire to them
+I'm not the sum of every "when"
+I'm breaking, bending, fading fast
+Just tell me this storm won't be my last
+
+I'll bleed in gold before I bend in shame…
+But tonight... I might just bend.</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">2<span>DIE</span>FOR</div>
+  <div class="footer-copy">© 2025 2DieFor · All Rights Reserved</div>
+</footer>
+
+<script>
+  function showSong(id) {
+    // Hide all panels
+    document.querySelectorAll('.song-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-song').forEach(b => b.classList.remove('active'));
+
+    // Show selected
+    const panel = document.getElementById('song-' + id);
+    if (panel) panel.classList.add('active');
+
+    const btn = document.querySelector('.sidebar-song[onclick*="\'' + id + '\'"]');
+    if (btn) btn.classList.add('active');
+
+    // Update mobile select
+    const sel = document.querySelector('.mobile-picker select');
+    if (sel) sel.value = id;
+
+    // Scroll to top of content on mobile
+    if (window.innerWidth < 900) {
+      document.querySelector('.song-panels').scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  function searchSongs(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('.sidebar-song').forEach(btn => {
+      const text = btn.textContent.toLowerCase();
+      btn.classList.toggle('hidden', q && !text.includes(q));
+    });
+    // Show/hide album labels if all songs hidden
+    document.querySelectorAll('.sidebar-album').forEach(alb => {
+      const visible = [...alb.querySelectorAll('.sidebar-song')].some(b => !b.classList.contains('hidden'));
+      alb.style.display = visible ? '' : 'none';
+    });
+  }
+
+  // Set first song active in sidebar on load
+  document.querySelector('.sidebar-song').classList.add('active');
+</script>
+
+</body>
+</html>
