@@ -16,6 +16,52 @@
     --muted: #888;
   }
 
+  /* COUNTDOWN BANNER */
+  .release-banner {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    background: var(--accent);
+    color: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .release-banner a {
+    color: var(--black);
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0,0,0,0.3);
+    white-space: nowrap;
+  }
+
+  .release-banner a:hover { border-bottom-color: var(--black); }
+
+  .countdown-units {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  .countdown-unit { display: flex; align-items: baseline; gap: 0.2rem; }
+  .countdown-num { font-size: 1.2rem; }
+  .countdown-label { font-size: 0.55rem; letter-spacing: 0.1em; opacity: 0.7; }
+
+  /* Push nav down when banner is visible */
+  body.has-banner nav { top: 2.2rem; }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
@@ -938,7 +984,20 @@
   }
 </style>
 </head>
-<body>
+<body class="has-banner">
+
+<!-- RELEASE BANNER -->
+<div class="release-banner" id="release-banner">
+  <span>🔥 New album dropping —</span>
+  <strong>Ashes &amp; Echoes</strong>
+  <div class="countdown-units">
+    <div class="countdown-unit"><span class="countdown-num" id="cd-days">--</span><span class="countdown-label">days</span></div>
+    <div class="countdown-unit"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-label">hrs</span></div>
+    <div class="countdown-unit"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-label">min</span></div>
+    <div class="countdown-unit"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-label">sec</span></div>
+  </div>
+  <a href="https://distrokid.com/hyperfollow/2diefor/ashes--echoes" target="_blank">Pre-save now ↗</a>
+</div>
 
 <!-- NAV -->
 <nav>
@@ -2895,5 +2954,33 @@ But tonight... I might just bend.</div>
   <div class="footer-copy">© 2025 2DieFor · All Rights Reserved</div>
 </footer>
 
+<script>
+  (function() {
+    var release = new Date('2025-03-27T00:00:00');
+    var banner = document.getElementById('release-banner');
+
+    function update() {
+      var now = new Date();
+      var diff = release - now;
+      if (diff <= 0) {
+        // Album is out — hide banner, remove body class
+        banner.style.display = 'none';
+        document.body.classList.remove('has-banner');
+        return;
+      }
+      var days  = Math.floor(diff / 86400000);
+      var hours = Math.floor((diff % 86400000) / 3600000);
+      var mins  = Math.floor((diff % 3600000) / 60000);
+      var secs  = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
+      document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+      document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+      document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+    }
+
+    update();
+    setInterval(update, 1000);
+  })();
+</script>
 </body>
 </html>
