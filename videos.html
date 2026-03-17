@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Videos — 2DieFor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --accent: #c8ff00;
+    --gray: #1a1a1a;
+    --mid: #333;
+    --muted: #888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--accent); }
+
+  nav ul {
+    list-style: none;
+    display: none;
+    gap: 2rem;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav a:hover, nav a.active { color: var(--accent); }
+
+  .nav-spotify {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid rgba(200,255,0,0.25);
+    padding: 0.4rem 0.85rem;
+    transition: background 0.2s;
+  }
+
+  .nav-spotify:hover { background: rgba(200,255,0,0.08); }
+
+  @media (min-width: 900px) {
+    nav { padding: 1.5rem 4rem; }
+    nav ul { display: flex; }
+    .nav-spotify { display: none; }
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    padding: 8rem 1.2rem 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 12vw, 7rem);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+  }
+
+  @media (min-width: 900px) {
+    .page-header { padding: 8rem 4rem 4rem; }
+  }
+
+  /* FEATURED PLAYER */
+  .featured-section {
+    padding: 2rem 1.2rem;
+    background: var(--gray);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .featured-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .featured-player {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    overflow: hidden;
+  }
+
+  .featured-player iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .featured-info {
+    margin-top: 1rem;
+  }
+
+  .featured-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.6rem, 5vw, 2.5rem);
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+  }
+
+  @media (min-width: 900px) {
+    .featured-section { padding: 3rem 4rem; }
+
+    .featured-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .featured-info { margin-top: 0; }
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    padding: 1.2rem 1.2rem 0;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    background: none;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); color: var(--black); border-color: var(--accent); font-weight: 500; }
+
+  @media (min-width: 900px) {
+    .filter-bar { padding: 2rem 4rem 0; }
+  }
+
+  /* VIDEO LIST */
+  .videos-section {
+    padding: 1.5rem 1.2rem 4rem;
+  }
+
+  .videos-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .video-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: background 0.15s;
+    border-radius: 2px;
+  }
+
+  .video-row:hover { background: rgba(255,255,255,0.03); }
+  .video-row.active { background: rgba(200,255,0,0.04); }
+  .video-row.active .video-row-title { color: var(--accent); }
+  .video-row.hidden { display: none; }
+
+  .video-thumb {
+    width: 120px;
+    flex-shrink: 0;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    position: relative;
+    background: var(--gray);
+  }
+
+  .video-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+  }
+
+  .video-row:hover .video-thumb img { transform: scale(1.05); }
+
+  .video-thumb-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 1.2rem;
+  }
+
+  .video-row:hover .video-thumb-play,
+  .video-row.active .video-thumb-play { opacity: 1; }
+  .video-row.active .video-thumb-play { background: rgba(200,255,0,0.15); }
+
+  .video-row-meta { flex: 1; min-width: 0; }
+
+  .video-row-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s;
+  }
+
+  .video-row-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  .video-row-tag.official { color: var(--accent); opacity: 0.7; }
+
+  .video-row-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.12);
+    width: 2rem;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .video-row.active .video-row-num { color: var(--accent); }
+
+  @media (min-width: 600px) {
+    .video-thumb { width: 160px; }
+    .video-row-title { font-size: 1.15rem; }
+  }
+
+  @media (min-width: 900px) {
+    .videos-section { padding: 2rem 4rem 6rem; }
+    .video-thumb { width: 200px; }
+    .video-row { padding: 1rem 0.5rem; gap: 1.5rem; }
+    .video-row-title { font-size: 1.3rem; }
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .footer-logo span { color: var(--accent); }
+
+  .footer-copy {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  @media (min-width: 900px) {
+    footer { flex-direction: row; text-align: left; padding: 3rem 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">2<span>DIE</span>FOR</a>
+  <ul>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="band.html">The Band</a></li>
+    <li><a href="index.html#music">Music</a></li>
+    <li><a href="index.html#stories">Stories</a></li>
+    <li><a href="videos.html" class="active">Videos</a></li>
+    <li><a href="index.html#social">Follow</a></li>
+  </ul>
+  <a href="https://open.spotify.com/artist/7ktontuidnJoXRyiM8maQd" target="_blank" class="nav-spotify">▶ Spotify</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="section-label">Visual</div>
+  <h1 class="page-title">Music<br>Videos</h1>
+</div>
+
+<!-- FEATURED PLAYER -->
+<div class="featured-section">
+  <div class="featured-label">Now Playing</div>
+  <div class="featured-layout">
+    <div class="featured-player">
+      <iframe id="featured-iframe"
+        src="https://www.youtube.com/embed/agCsTFHUqaE?autoplay=0&rel=0&modestbranding=1"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <div class="featured-info">
+      <div class="featured-title" id="featured-title">Running from Myself</div>
+      <p style="margin-top:0.75rem; font-size:0.85rem; color:var(--muted); line-height:1.7;">Click any video below to play it here.</p>
+      <a id="featured-yt-link" href="https://www.youtube.com/watch?v=agCsTFHUqaE" target="_blank"
+        style="display:inline-flex;align-items:center;gap:0.5rem;margin-top:1.25rem;color:var(--accent);text-decoration:none;font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid rgba(200,255,0,0.3);padding-bottom:0.2rem;">
+        ↗ Open on YouTube
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterVideos('all', this)">All Videos</button>
+  <button class="filter-btn" onclick="filterVideos('official', this)">Official MVs</button>
+  <button class="filter-btn" onclick="filterVideos('lyric', this)">Lyric Videos</button>
+</div>
+
+<!-- VIDEO LIST -->
+<div class="videos-section">
+  <div class="videos-grid" id="videos-grid">
+
+    <div class="video-row active" data-id="agCsTFHUqaE" data-title="Running from Myself" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">01</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/agCsTFHUqaE/mqdefault.jpg" alt="Running from Myself" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Running from Myself</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="sQvFmBWZotQ" data-title="House of Monsters" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">02</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/sQvFmBWZotQ/mqdefault.jpg" alt="House of Monsters" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">House of Monsters</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="uHPDeNe3SJM" data-title="One Hell of a Ride" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">03</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/uHPDeNe3SJM/mqdefault.jpg" alt="One Hell of a Ride" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">One Hell of a Ride</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="Wu1EmFpENUE" data-title="Regret Me Not" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">04</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/Wu1EmFpENUE/mqdefault.jpg" alt="Regret Me Not" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Regret Me Not</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="R_L4lL9DUVU" data-title="Frozen in Time" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">05</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/R_L4lL9DUVU/mqdefault.jpg" alt="Frozen in Time" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Frozen in Time</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="Cptf9W7EMwo" data-title="The Fortress" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">06</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/Cptf9W7EMwo/mqdefault.jpg" alt="The Fortress" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">The Fortress</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="0r2bBTMTDcY" data-title="Climbing Higher" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">07</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/0r2bBTMTDcY/mqdefault.jpg" alt="Climbing Higher" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Climbing Higher</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="rAO9GWJY6Cc" data-title="My Mary-Anne" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">08</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/rAO9GWJY6Cc/mqdefault.jpg" alt="My Mary-Anne" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">My Mary-Anne</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="m0xKNZOFGfM" data-title="Twist and Weave" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">09</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/m0xKNZOFGfM/mqdefault.jpg" alt="Twist and Weave" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Twist and Weave</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="Go6CeOPY554" data-title="The Fray" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">10</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/Go6CeOPY554/mqdefault.jpg" alt="The Fray" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">The Fray</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="OxZtHyv9Ln0" data-title="Fractured Lines" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">11</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/OxZtHyv9Ln0/mqdefault.jpg" alt="Fractured Lines" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Fractured Lines</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="h9feYFmHMcU" data-title="Fate" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">12</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/h9feYFmHMcU/mqdefault.jpg" alt="Fate" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Fate</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="byvw4PENCzQ" data-title="Broken" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">13</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/byvw4PENCzQ/mqdefault.jpg" alt="Broken" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Broken</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="U4F9pzPRT8Q" data-title="I Own the Night" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">14</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/U4F9pzPRT8Q/mqdefault.jpg" alt="I Own the Night" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">I Own the Night</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="pXc3lZoA8E0" data-title="6 AM" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">15</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/pXc3lZoA8E0/mqdefault.jpg" alt="6 AM" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">6 AM</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="grgqz8J6n20" data-title="Whole" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">16</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/grgqz8J6n20/mqdefault.jpg" alt="Whole" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Whole</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="lQhFsnSw9qs" data-title="Rising from the Ashes" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">17</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/lQhFsnSw9qs/mqdefault.jpg" alt="Rising from the Ashes" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Rising from the Ashes</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="H0mD_v44X8U" data-title="Remember the Lake" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">18</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/H0mD_v44X8U/mqdefault.jpg" alt="Remember the Lake" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Remember the Lake</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="TiiqNQeVE-c" data-title="Bleed in Gold" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">19</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/TiiqNQeVE-c/mqdefault.jpg" alt="Bleed in Gold" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Bleed in Gold</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="2hWspnRGSBY" data-title="Phoenix Rising" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">20</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/2hWspnRGSBY/mqdefault.jpg" alt="Phoenix Rising" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Phoenix Rising</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="DKRjaAHX76Q" data-title="Tell Me" data-type="official" onclick="selectVideo(this)">
+      <div class="video-row-num">21</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/DKRjaAHX76Q/mqdefault.jpg" alt="Tell Me" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Tell Me</div>
+        <div class="video-row-tag official">Official Music Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="J-gn5WUYE3o" data-title="I Still Said It" data-type="lyric" onclick="selectVideo(this)">
+      <div class="video-row-num">22</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/J-gn5WUYE3o/mqdefault.jpg" alt="I Still Said It" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">I Still Said It</div>
+        <div class="video-row-tag">Lyric Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="ZfA8bfvanqA" data-title="The Weight of Quiet" data-type="lyric" onclick="selectVideo(this)">
+      <div class="video-row-num">23</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/ZfA8bfvanqA/mqdefault.jpg" alt="The Weight of Quiet" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">The Weight of Quiet</div>
+        <div class="video-row-tag">Lyric Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="j3Adp86jFPI" data-title="Weight of the World" data-type="lyric" onclick="selectVideo(this)">
+      <div class="video-row-num">24</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/j3Adp86jFPI/mqdefault.jpg" alt="Weight of the World" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Weight of the World</div>
+        <div class="video-row-tag">Lyric Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="MAuS2hhChUk" data-title="You Were the Fire" data-type="lyric" onclick="selectVideo(this)">
+      <div class="video-row-num">25</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/MAuS2hhChUk/mqdefault.jpg" alt="You Were the Fire" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">You Were the Fire</div>
+        <div class="video-row-tag">Lyric Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="FQahvn95tFg" data-title="Drink Till I Bleed" data-type="lyric" onclick="selectVideo(this)">
+      <div class="video-row-num">26</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/FQahvn95tFg/mqdefault.jpg" alt="Drink Till I Bleed" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Drink Till I Bleed</div>
+        <div class="video-row-tag">Lyric Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="pFRUEj69QVk" data-title="Save the Princess" data-type="lyric" onclick="selectVideo(this)">
+      <div class="video-row-num">27</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/pFRUEj69QVk/mqdefault.jpg" alt="Save the Princess" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Save the Princess</div>
+        <div class="video-row-tag">Lyric Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="rDPDMuC6lmw" data-title="Bleed in Gold (Full EP)" data-type="lyric" onclick="selectVideo(this)">
+      <div class="video-row-num">28</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/rDPDMuC6lmw/mqdefault.jpg" alt="Bleed in Gold Full EP" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Bleed in Gold — Full EP</div>
+        <div class="video-row-tag">Full Lyric Video</div>
+      </div>
+    </div>
+
+    <div class="video-row" data-id="fvZ0E2EL11c" data-title="Breaking Point" data-type="lyric" onclick="selectVideo(this)">
+      <div class="video-row-num">29</div>
+      <div class="video-thumb">
+        <img src="https://img.youtube.com/vi/fvZ0E2EL11c/mqdefault.jpg" alt="Breaking Point" loading="lazy">
+        <div class="video-thumb-play">▶</div>
+      </div>
+      <div class="video-row-meta">
+        <div class="video-row-title">Breaking Point</div>
+        <div class="video-row-tag">Lyric Video</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">2<span>DIE</span>FOR</div>
+  <div class="footer-copy">© 2025 2DieFor · All Rights Reserved</div>
+</footer>
+
+<script>
+  function selectVideo(row) {
+    // Deactivate all
+    document.querySelectorAll('.video-row').forEach(r => r.classList.remove('active'));
+    row.classList.add('active');
+
+    const id = row.dataset.id;
+    const title = row.dataset.title;
+
+    // Update featured player
+    document.getElementById('featured-iframe').src =
+      `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+    document.getElementById('featured-title').textContent = title;
+    document.getElementById('featured-yt-link').href = `https://www.youtube.com/watch?v=${id}`;
+
+    // Scroll to top of featured on mobile
+    if (window.innerWidth < 900) {
+      document.querySelector('.featured-section').scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  function filterVideos(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.video-row').forEach(row => {
+      if (type === 'all') {
+        row.classList.remove('hidden');
+      } else {
+        row.classList.toggle('hidden', row.dataset.type !== type);
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
