@@ -487,7 +487,7 @@
       const messages = data.record.messages || [];
 
       if (messages.length === 0) {
-        container.innerHTML = '<div class="messages-empty">No messages yet. Be the first to leave one.</div>';
+        container.innerHTML = '<div class="messages-empty">No messages yet — or messages are awaiting approval. Be the first to leave one!</div>';
         countEl.textContent = '';
         return;
       }
@@ -495,7 +495,7 @@
       countEl.textContent = messages.length + ' message' + (messages.length !== 1 ? 's' : '');
       container.innerHTML = '';
 
-      [...messages].reverse().forEach((msg, i) => {
+      [...messages].filter(m => m.status === 'approved').reverse().forEach((msg, i) => {
         const card = document.createElement('div');
         card.className = 'message-card';
         card.style.animationDelay = (i * 0.06) + 's';
@@ -566,7 +566,7 @@
       const messages = getData.record.messages || [];
 
       // Add new message
-      messages.push({ name, country, song, message, date: new Date().toISOString() });
+      messages.push({ name, country, song, message, date: new Date().toISOString(), status: 'pending' });
 
       // Save back
       const putRes = await fetch(BASE_URL, {
