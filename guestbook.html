@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guestbook — 2DieFor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --accent: #c8ff00;
+    --gray: #1a1a1a;
+    --mid: #2a2a2a;
+    --muted: #888;
+    --red: #e8202a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--accent); }
+
+  nav ul {
+    list-style: none;
+    display: none;
+    gap: 2rem;
+  }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav a:hover, nav a.active { color: var(--accent); }
+
+  .nav-spotify {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid rgba(200,255,0,0.25);
+    padding: 0.4rem 0.85rem;
+    transition: background 0.2s;
+  }
+
+  .nav-spotify:hover { background: rgba(200,255,0,0.08); }
+
+  @media (min-width: 900px) {
+    nav { padding: 1.5rem 4rem; }
+    nav ul { display: flex; }
+    .nav-spotify { display: none; }
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    padding: 8rem 1.2rem 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(200,255,0,0.03) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 12vw, 7rem);
+    line-height: 0.9;
+  }
+
+  .page-subtitle {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: rgba(245,245,240,0.55);
+    max-width: 520px;
+    line-height: 1.8;
+  }
+
+  @media (min-width: 900px) {
+    .page-header { padding: 8rem 4rem 4rem; }
+  }
+
+  /* FORM */
+  .form-section {
+    padding: 2.5rem 1.2rem;
+    background: var(--gray);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .form-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    max-width: 680px;
+  }
+
+  @media (min-width: 600px) {
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    .form-message { grid-column: 1 / -1; }
+    .form-submit { grid-column: 1 / -1; }
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .form-field label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    border-radius: 0;
+    -webkit-appearance: none;
+  }
+
+  .form-field input:focus,
+  .form-field textarea:focus,
+  .form-field select:focus {
+    border-color: var(--accent);
+  }
+
+  .form-field select option { background: var(--black); }
+
+  .form-field textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.7;
+  }
+
+  .form-submit {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-submit {
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .btn-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .form-status {
+    font-size: 0.82rem;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .form-status.visible { opacity: 1; }
+  .form-status.error { color: var(--red); }
+
+  @media (min-width: 900px) {
+    .form-section { padding: 3rem 4rem; }
+  }
+
+  /* MESSAGES */
+  .messages-section {
+    padding: 2.5rem 1.2rem 5rem;
+  }
+
+  .messages-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .messages-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.08em;
+  }
+
+  .messages-count {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .messages-loading {
+    color: var(--muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    padding: 2rem 0;
+  }
+
+  .messages-empty {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .message-card {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 1.5rem 0;
+    animation: fadeUp 0.4s forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .message-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .message-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+
+  .message-song {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(200,255,0,0.08);
+    border: 1px solid rgba(200,255,0,0.2);
+    padding: 0.15rem 0.5rem;
+  }
+
+  .message-country {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .message-text {
+    font-size: 0.95rem;
+    line-height: 1.85;
+    color: rgba(245,245,240,0.75);
+  }
+
+  .message-date {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.2);
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 900px) {
+    .messages-section { padding: 3rem 4rem 6rem; }
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .footer-logo span { color: var(--accent); }
+
+  .footer-copy {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  @media (min-width: 900px) {
+    footer { flex-direction: row; text-align: left; padding: 3rem 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">2<span>DIE</span>FOR</a>
+  <ul>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="band.html">The Band</a></li>
+    <li><a href="index.html#music">Music</a></li>
+    <li><a href="index.html#stories">Stories</a></li>
+    <li><a href="videos.html">Videos</a></li>
+    <li><a href="guestbook.html" class="active">Guestbook</a></li>
+    <li><a href="index.html#social">Follow</a></li>
+  </ul>
+  <a href="https://open.spotify.com/artist/7ktontuidnJoXRyiM8maQd" target="_blank" class="nav-spotify">▶ Spotify</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="section-label">Community</div>
+  <h1 class="page-title">Guest<br>book</h1>
+  <p class="page-subtitle">If a song hit different. If you've been there. If you just want to say something — this is the place. Every message gets read.</p>
+</div>
+
+<!-- FORM -->
+<div class="form-section">
+  <div class="form-title">Leave a Message</div>
+  <div class="form-grid">
+    <div class="form-field">
+      <label>Your Name *</label>
+      <input type="text" id="gb-name" placeholder="What do we call you?" maxlength="50">
+    </div>
+    <div class="form-field">
+      <label>Country</label>
+      <input type="text" id="gb-country" placeholder="Where are you from?" maxlength="50">
+    </div>
+    <div class="form-field form-message">
+      <label>Song or album that means something to you</label>
+      <input type="text" id="gb-song" placeholder="e.g. Breaking Point, Bleed in Gold..." maxlength="80">
+    </div>
+    <div class="form-field form-message">
+      <label>Your Message *</label>
+      <textarea id="gb-message" placeholder="Say what you need to say..." maxlength="600"></textarea>
+    </div>
+    <!-- Honeypot — hidden from real users, bots fill it in -->
+    <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
+      <input type="text" id="gb-honeypot" name="website" tabindex="-1" autocomplete="off">
+    </div>
+    <div class="form-submit">
+      <button class="btn-submit" id="gb-submit" onclick="submitMessage()">Post Message</button>
+      <span class="form-status" id="gb-status"></span>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGES -->
+<div class="messages-section">
+  <div class="messages-header">
+    <div class="messages-title">Messages</div>
+    <div class="messages-count" id="messages-count"></div>
+  </div>
+  <div id="messages-container">
+    <div class="messages-loading">Loading messages...</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">2<span>DIE</span>FOR</div>
+  <div class="footer-copy">© 2025 2DieFor · All Rights Reserved</div>
+</footer>
+
+<script>
+  const STORAGE_KEY = 'guestbook_messages';
+  const RATE_LIMIT_KEY = 'gb_last_submit';
+  const RATE_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
+
+  const SPAM_WORDS = [
+    'buy cheap', 'click here', 'casino', 'viagra', 'crypto', 'bitcoin',
+    'make money', 'free money', 'earn cash', 'work from home', 'seo',
+    'discount', 'loan', 'weight loss', 'subscribe now', 'limited offer',
+    'act now', 'winner', 'congratulations', 'http://', 'https://'
+  ];
+
+  // Record when the form was loaded (for time check)
+  const FORM_LOAD_TIME = Date.now();
+
+  window.addEventListener('load', loadMessages);
+
+  async function loadMessages() {
+    const container = document.getElementById('messages-container');
+    const countEl = document.getElementById('messages-count');
+
+    try {
+      const result = await window.storage.get(STORAGE_KEY, true);
+      const messages = result ? JSON.parse(result.value) : [];
+
+      if (messages.length === 0) {
+        container.innerHTML = '<div class="messages-empty">No messages yet. Be the first to leave one.</div>';
+        countEl.textContent = '';
+        return;
+      }
+
+      countEl.textContent = messages.length + ' message' + (messages.length !== 1 ? 's' : '');
+      container.innerHTML = '';
+
+      // Show newest first
+      [...messages].reverse().forEach((msg, i) => {
+        const card = document.createElement('div');
+        card.className = 'message-card';
+        card.style.animationDelay = (i * 0.06) + 's';
+        card.innerHTML = `
+          <div class="message-header">
+            <div class="message-name">${escHtml(msg.name)}</div>
+            ${msg.song ? `<div class="message-song">${escHtml(msg.song)}</div>` : ''}
+            ${msg.country ? `<div class="message-country">📍 ${escHtml(msg.country)}</div>` : ''}
+          </div>
+          <div class="message-text">${escHtml(msg.message).replace(/\n/g, '<br>')}</div>
+          <div class="message-date">${formatDate(msg.date)}</div>
+        `;
+        container.appendChild(card);
+      });
+
+    } catch (err) {
+      container.innerHTML = '<div class="messages-empty">No messages yet. Be the first to leave one.</div>';
+      countEl.textContent = '';
+    }
+  }
+
+  async function submitMessage() {
+    const nameEl    = document.getElementById('gb-name');
+    const countryEl = document.getElementById('gb-country');
+    const songEl    = document.getElementById('gb-song');
+    const msgEl     = document.getElementById('gb-message');
+    const submitBtn = document.getElementById('gb-submit');
+    const statusEl  = document.getElementById('gb-status');
+
+    const name    = nameEl.value.trim();
+    const country = countryEl.value.trim();
+    const song    = songEl.value.trim();
+    const message = msgEl.value.trim();
+
+    // ── HONEYPOT CHECK ──
+    const honeypot = document.getElementById('gb-honeypot').value;
+    if (honeypot) { showStatus('Message posted! Thank you. ✓', false); return; } // silently drop
+
+    // ── TIME CHECK — less than 3 seconds = bot ──
+    if (Date.now() - FORM_LOAD_TIME < 3000) {
+      showStatus('Message posted! Thank you. ✓', false); return; // silently drop
+    }
+
+    // ── RATE LIMIT — max 1 per 5 minutes ──
+    const lastSubmit = parseInt(localStorage.getItem(RATE_LIMIT_KEY) || '0');
+    if (Date.now() - lastSubmit < RATE_LIMIT_MS) {
+      const wait = Math.ceil((RATE_LIMIT_MS - (Date.now() - lastSubmit)) / 60000);
+      showStatus(`Please wait ${wait} minute${wait !== 1 ? 's' : ''} before posting again.`, true);
+      return;
+    }
+
+    // ── SPAM WORD FILTER ──
+    const combined = (name + ' ' + message).toLowerCase();
+    const isSpam = SPAM_WORDS.some(word => combined.includes(word));
+    if (isSpam) { showStatus('Message posted! Thank you. ✓', false); return; } // silently drop
+
+    // ── BASIC VALIDATION ──
+    if (!name) { showStatus('Please enter your name.', true); nameEl.focus(); return; }
+    if (!message) { showStatus('Please write a message.', true); msgEl.focus(); return; }
+    if (message.length < 5) { showStatus('Message is too short.', true); return; }
+
+    submitBtn.disabled = true;
+    showStatus('Posting...', false);
+
+    try {
+      // Load existing
+      let messages = [];
+      try {
+        const result = await window.storage.get(STORAGE_KEY, true);
+        if (result) messages = JSON.parse(result.value);
+      } catch(e) { messages = []; }
+
+      // Add new message
+      messages.push({
+        name,
+        country,
+        song,
+        message,
+        date: new Date().toISOString()
+      });
+
+      // Save back
+      await window.storage.set(STORAGE_KEY, JSON.stringify(messages), true);
+
+      // Save rate limit timestamp
+      localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
+
+      // Clear form
+      nameEl.value = '';
+      countryEl.value = '';
+      songEl.value = '';
+      msgEl.value = '';
+
+      showStatus('Message posted! Thank you. ✓', false);
+      await loadMessages();
+
+      // Scroll to messages
+      document.getElementById('messages-container').scrollIntoView({ behavior: 'smooth' });
+
+    } catch (err) {
+      showStatus('Something went wrong. Try again.', true);
+      console.error(err);
+    }
+
+    submitBtn.disabled = false;
+  }
+
+  function showStatus(msg, isError) {
+    const el = document.getElementById('gb-status');
+    el.textContent = msg;
+    el.className = 'form-status visible' + (isError ? ' error' : '');
+    if (!isError) setTimeout(() => el.classList.remove('visible'), 4000);
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function formatDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+</script>
+
+</body>
+</html>
