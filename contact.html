@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — 2DieFor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --accent: #c8ff00;
+    --gray: #1a1a1a;
+    --muted: #888;
+    --red: #e8202a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .nav-logo span { color: var(--accent); }
+  nav ul { list-style: none; display: none; gap: 2rem; }
+
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  nav a:hover, nav a.active { color: var(--accent); }
+
+  .nav-spotify {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid rgba(200,255,0,0.25);
+    padding: 0.4rem 0.85rem;
+    transition: background 0.2s;
+  }
+
+  .nav-spotify:hover { background: rgba(200,255,0,0.08); }
+
+  @media (min-width: 900px) {
+    nav { padding: 1.5rem 4rem; }
+    nav ul { display: flex; }
+    .nav-spotify { display: none; }
+  }
+
+  /* PAGE HEADER */
+  .page-header {
+    padding: 8rem 1.2rem 4rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(200,255,0,0.03) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3.5rem, 14vw, 8rem);
+    line-height: 0.88;
+  }
+
+  .page-subtitle {
+    margin-top: 1.2rem;
+    font-size: 1rem;
+    color: rgba(245,245,240,0.55);
+    max-width: 500px;
+    line-height: 1.8;
+  }
+
+  @media (min-width: 900px) { .page-header { padding: 8rem 4rem 5rem; } }
+
+  /* CONTACT GRID */
+  .contact-section {
+    padding: 4rem 1.2rem;
+  }
+
+  @media (min-width: 900px) {
+    .contact-section {
+      padding: 6rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+  }
+
+  /* LEFT — COLLAB */
+  .collab-block { margin-bottom: 3rem; }
+  @media (min-width: 900px) { .collab-block { margin-bottom: 0; } }
+
+  .block-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    line-height: 1;
+    margin-bottom: 1.2rem;
+  }
+
+  .block-title span { color: var(--accent); }
+
+  .block-text {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: rgba(245,245,240,0.65);
+    margin-bottom: 2rem;
+  }
+
+  .block-text p + p { margin-top: 1rem; }
+
+  /* COLLAB TAGS */
+  .collab-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .collab-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid rgba(200,255,0,0.25);
+    color: var(--accent);
+    padding: 0.35rem 0.85rem;
+  }
+
+  /* DIRECT CONTACT */
+  .direct-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 2.5rem;
+  }
+
+  .direct-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+    background: var(--gray);
+    border: 1px solid rgba(255,255,255,0.05);
+    text-decoration: none;
+    color: var(--white);
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .direct-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+
+  .direct-link:hover { background: #222; border-color: rgba(200,255,0,0.15); }
+  .direct-link:hover::after { transform: scaleX(1); }
+
+  .direct-link-left { display: flex; align-items: center; gap: 1rem; }
+
+  .direct-link-type {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    min-width: 60px;
+  }
+
+  .direct-link-value {
+    font-size: 0.9rem;
+    color: rgba(245,245,240,0.8);
+  }
+
+  .direct-link-arrow {
+    font-size: 0.9rem;
+    color: var(--muted);
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .direct-link:hover .direct-link-arrow {
+    color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  /* RIGHT — FORM */
+  .form-block {}
+
+  .form-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .form-field label {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    background: var(--gray);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 300;
+    padding: 0.8rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    border-radius: 0;
+    -webkit-appearance: none;
+  }
+
+  .form-field select option { background: var(--black); }
+
+  .form-field input:focus,
+  .form-field textarea:focus,
+  .form-field select:focus { border-color: var(--accent); }
+
+  .form-field input::placeholder,
+  .form-field textarea::placeholder { color: var(--muted); opacity: 0.6; }
+
+  .form-field textarea {
+    resize: vertical;
+    min-height: 130px;
+    line-height: 1.7;
+  }
+
+  .form-submit-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-send {
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.9rem 2.2rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .btn-send:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .form-status {
+    font-size: 0.82rem;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .form-status.visible { opacity: 1; }
+  .form-status.error { color: var(--red); }
+
+  /* NOTE */
+  .honest-note {
+    margin-top: 5rem;
+    padding: 2rem;
+    border-left: 3px solid var(--accent);
+    background: rgba(200,255,0,0.02);
+  }
+
+  @media (min-width: 900px) {
+    .honest-note {
+      grid-column: 1 / -1;
+      margin-top: 0;
+      padding: 2.5rem 3rem;
+    }
+  }
+
+  .honest-note-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+    color: var(--accent);
+  }
+
+  .honest-note-text {
+    font-size: 0.92rem;
+    line-height: 1.9;
+    color: rgba(245,245,240,0.6);
+    max-width: 700px;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.1em; }
+  .footer-logo span { color: var(--accent); }
+  .footer-copy { font-size: 0.75rem; color: var(--muted); letter-spacing: 0.05em; }
+
+  @media (min-width: 900px) {
+    footer { flex-direction: row; text-align: left; padding: 3rem 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">2<span>DIE</span>FOR</a>
+  <ul>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="band.html">The Band</a></li>
+    <li><a href="index.html#music">Music</a></li>
+    <li><a href="index.html#stories">Stories</a></li>
+    <li><a href="videos.html">Videos</a></li>
+    <li><a href="lyrics.html">Lyrics</a></li>
+    <li><a href="guestbook.html">Guestbook</a></li>
+    <li><a href="contact.html" class="active">Contact</a></li>
+    <li><a href="index.html#social">Follow</a></li>
+    <li><a href="2diefor-epk.html" style="color:var(--accent)!important;">EPK</a></li>
+  </ul>
+  <a href="https://open.spotify.com/artist/7ktontuidnJoXRyiM8maQd" target="_blank" class="nav-spotify">▶ Spotify</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="section-label">Get in touch</div>
+  <h1 class="page-title">Let's<br>Talk.</h1>
+  <p class="page-subtitle">Whether you want to collaborate on a song, feature our music, or just say something — we're listening.</p>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-section">
+
+  <!-- LEFT: COLLAB + DIRECT -->
+  <div class="collab-block">
+    <div class="section-label">Collaborate</div>
+    <h2 class="block-title">Wanna Work<br><span>Together?</span></h2>
+    <div class="block-text">
+      <p>We're open to collaborating on songs. If you're a vocalist, instrumentalist, producer, or just someone with an idea that won't leave you alone — reach out.</p>
+      <p>We don't care about genre gatekeeping. If it's honest and it hits hard, we want to hear it.</p>
+    </div>
+
+    <div class="collab-tags">
+      <div class="collab-tag">Songwriting</div>
+      <div class="collab-tag">Vocals</div>
+      <div class="collab-tag">Production</div>
+      <div class="collab-tag">Features</div>
+      <div class="collab-tag">Covers</div>
+      <div class="collab-tag">Remix</div>
+    </div>
+
+    <div class="section-label" style="margin-top:2.5rem;">Direct contact</div>
+    <div class="direct-links">
+      <a class="direct-link" href="mailto:2dieforu2@gmail.com">
+        <div class="direct-link-left">
+          <div class="direct-link-type">Email</div>
+          <div class="direct-link-value">2dieforu2@gmail.com</div>
+        </div>
+        <div class="direct-link-arrow">→</div>
+      </a>
+      <a class="direct-link" href="https://www.instagram.com/2diefor_u" target="_blank">
+        <div class="direct-link-left">
+          <div class="direct-link-type">Instagram</div>
+          <div class="direct-link-value">@2diefor_u</div>
+        </div>
+        <div class="direct-link-arrow">→</div>
+      </a>
+      <a class="direct-link" href="https://www.youtube.com/@2DieForU2" target="_blank">
+        <div class="direct-link-left">
+          <div class="direct-link-type">YouTube</div>
+          <div class="direct-link-value">@2DieForU2</div>
+        </div>
+        <div class="direct-link-arrow">→</div>
+      </a>
+      <a class="direct-link" href="https://www.twitter.com/2DieFor_me" target="_blank">
+        <div class="direct-link-left">
+          <div class="direct-link-type">X / Twitter</div>
+          <div class="direct-link-value">@2DieFor_me</div>
+        </div>
+        <div class="direct-link-arrow">→</div>
+      </a>
+      <a class="direct-link" href="2diefor-epk.html">
+        <div class="direct-link-left">
+          <div class="direct-link-type">Press</div>
+          <div class="direct-link-value">Download our EPK</div>
+        </div>
+        <div class="direct-link-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- RIGHT: FORM -->
+  <div class="form-block">
+    <div class="section-label">Send a message</div>
+    <h2 class="form-title">Drop Us<br>a Line.</h2>
+    <p class="form-subtitle">Fill in the form and we'll get back to you. No PR templates, no management layers — just us.</p>
+
+    <div class="form-fields">
+      <div class="form-row">
+        <div class="form-field">
+          <label>Your Name *</label>
+          <input type="text" id="c-name" placeholder="What do we call you?" maxlength="80">
+        </div>
+        <div class="form-field">
+          <label>Email *</label>
+          <input type="email" id="c-email" placeholder="your@email.com" maxlength="120">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Subject</label>
+        <select id="c-subject">
+          <option value="" disabled selected>What's this about?</option>
+          <option value="collab">Song collaboration / feature</option>
+          <option value="press">Press / playlist / feature</option>
+          <option value="remix">Remix / cover</option>
+          <option value="sync">Sync licensing</option>
+          <option value="general">Just saying hi</option>
+          <option value="other">Something else</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Message *</label>
+        <textarea id="c-message" placeholder="Tell us what's on your mind..."></textarea>
+      </div>
+
+      <!-- Honeypot -->
+      <div style="position:absolute;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
+        <input type="text" id="c-honeypot" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="form-submit-row">
+        <button class="btn-send" id="c-submit" onclick="sendMessage()">Send Message</button>
+        <span class="form-status" id="c-status"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HONEST NOTE -->
+  <div class="honest-note">
+    <div class="honest-note-title">A note on collabs</div>
+    <div class="honest-note-text">
+      We started this project because we needed somewhere to put feelings that had no other outlet. If you're reaching out about a collaboration, that's the energy we're looking for — something real, not something calculated. We're not chasing streams or trend cycles. If your idea is honest, we're interested.
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">2<span>DIE</span>FOR</div>
+  <div class="footer-copy">© 2025 2DieFor · All Rights Reserved</div>
+</footer>
+
+<script>
+  const BIN_ID = '69b9748cc3097a1dd533101e';
+  const API_KEY = atob('JDJhJDEwJDhWblluM1IzR3UzSU56YlV3dEhtTmVPdzUzR1VXN243Tkg1RXNVNzFndTd2YWUza2tXaVRp');
+  const CONTACT_KEY = 'contact_messages';
+  const RATE_KEY = 'contact_last_submit';
+
+  async function sendMessage() {
+    const name    = document.getElementById('c-name').value.trim();
+    const email   = document.getElementById('c-email').value.trim();
+    const subject = document.getElementById('c-subject').value;
+    const message = document.getElementById('c-message').value.trim();
+    const btn     = document.getElementById('c-submit');
+
+    // Honeypot
+    if (document.getElementById('c-honeypot').value) return;
+
+    // Rate limit — 1 per 5 minutes
+    const last = parseInt(localStorage.getItem(RATE_KEY) || '0');
+    if (Date.now() - last < 5 * 60 * 1000) {
+      showStatus('Please wait a few minutes before sending again.', true); return;
+    }
+
+    // Validate
+    if (!name)    { showStatus('Please enter your name.', true); return; }
+    if (!email || !email.includes('@')) { showStatus('Please enter a valid email.', true); return; }
+    if (!message) { showStatus('Please write a message.', true); return; }
+    if (message.length < 10) { showStatus('Message is too short.', true); return; }
+
+    btn.disabled = true;
+    showStatus('Sending...', false);
+
+    try {
+      // Load existing messages
+      const getRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+      const getData = await getRes.json();
+      const existing = getData.record.messages || [];
+
+      // Add contact message with a type flag
+      existing.push({
+        type: 'contact',
+        name, email,
+        subject: subject || 'No subject',
+        message,
+        date: new Date().toISOString(),
+        status: 'pending'
+      });
+
+      // Save back
+      const putRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': API_KEY
+        },
+        body: JSON.stringify({ messages: existing })
+      });
+
+      if (!putRes.ok) throw new Error('Failed');
+
+      localStorage.setItem(RATE_KEY, Date.now().toString());
+
+      // Clear form
+      document.getElementById('c-name').value = '';
+      document.getElementById('c-email').value = '';
+      document.getElementById('c-subject').value = '';
+      document.getElementById('c-message').value = '';
+
+      showStatus('Message sent! We\'ll get back to you. ✓', false);
+
+    } catch(err) {
+      showStatus('Something went wrong. Try emailing us directly.', true);
+    }
+
+    btn.disabled = false;
+  }
+
+  function showStatus(msg, isError) {
+    const el = document.getElementById('c-status');
+    el.textContent = msg;
+    el.className = 'form-status visible' + (isError ? ' error' : '');
+    if (!isError) setTimeout(() => el.classList.remove('visible'), 5000);
+  }
+</script>
+
+</body>
+</html>
