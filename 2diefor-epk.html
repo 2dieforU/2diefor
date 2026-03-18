@@ -134,6 +134,49 @@
     text-transform: uppercase;
   }
 
+  /* PDF DOWNLOAD BUTTON */
+  .pdf-download {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--red);
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    padding: 0.75rem 1.4rem;
+    box-shadow: 0 4px 20px rgba(232,32,42,0.4);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .pdf-download:hover { background: #c01020; transform: translateY(-2px); }
+  .pdf-download-icon { font-size: 1.1rem; }
+
+  /* PDF DOWNLOAD BUTTON */
+  .pdf-download {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--red);
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    padding: 0.75rem 1.4rem;
+    box-shadow: 0 4px 20px rgba(232,32,42,0.4);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .pdf-download:hover { background: #c01020; transform: translateY(-2px); }
+
   /* SCROLL INDICATOR */
   .scroll-hint {
     position: absolute;
@@ -1056,3 +1099,12 @@
 <footer>
   <div class="footer-logo">2DIEFOR</div>
   <div class="f
+  <div class="footer-copy">© 2025 2DieFor · All Rights Reserved · 2diefor.online</div>
+</footer>
+
+<a class="pdf-download" href="https://drive.google.com/file/d/1EONZp2EXABMNPHUcIJNcmjNHplC6UdSj/view?usp=drive_link" target="_blank">
+  <span class="pdf-download-icon">↓</span> Download PDF
+</a>
+
+</body>
+</html>
