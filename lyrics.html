@@ -151,11 +151,19 @@
 
   @media (min-width: 900px) { .sidebar { display: block; } }
 
-  .sidebar-album { margin-bottom: 0.5rem; }
+  .sidebar-album { margin-bottom: 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
   .sidebar-album-name {
-    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--accent); padding: 0.6rem 1.5rem 0.3rem;
+    font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); padding: 0.75rem 1.5rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+    transition: color 0.2s; user-select: none;
   }
+  .sidebar-album-name:hover { color: var(--white); }
+  .sidebar-album-name.open { color: var(--accent); }
+  .sidebar-album-name::after { content: '›'; font-size: 1rem; transition: transform 0.25s; }
+  .sidebar-album-name.open::after { transform: rotate(90deg); }
+  .sidebar-album-songs { display: none; }
+  .sidebar-album-songs.open { display: block; }
   .sidebar-song {
     display: block; width: 100%;
     background: none; border: none; border-left: 2px solid transparent;
@@ -359,8 +367,8 @@
   <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
 <div class="sidebar-album">
-  <div class="sidebar-album-name">Fallout</div>
-  <button class="sidebar-song" onclick="showSong('bp')">Breaking Point</button>
+  <div class="sidebar-album-name" onclick="toggleAlbum('fallout')" id="album-fallout">Fallout</div>
+  <div class="sidebar-album-songs" id="songs-fallout">  <button class="sidebar-song" onclick="showSong('bp')">Breaking Point</button>
   <button class="sidebar-song" onclick="showSong('s2')">Rising From The Ashes</button>
   <button class="sidebar-song" onclick="showSong('s3')">Climbing Higher</button>
   <button class="sidebar-song" onclick="showSong('s4')">Whole</button>
@@ -375,19 +383,21 @@
   <button class="sidebar-song" onclick="showSong('s13')">The Fray</button>
   <button class="sidebar-song" onclick="showSong('s14')">Remember The Lake</button>
   <button class="sidebar-song" onclick="showSong('s15')">No More Silence (Outro)</button>
-</div>
+  </div>
+</div></div>
 <div class="sidebar-album">
-  <div class="sidebar-album-name">Bleed in Gold EP</div>
-  <button class="sidebar-song" onclick="showSong('b1')">Weight of The World</button>
+  <div class="sidebar-album-name" onclick="toggleAlbum('bleed-in-gold-ep')" id="album-bleed-in-gold-ep">Bleed in Gold EP</div>
+  <div class="sidebar-album-songs" id="songs-bleed-in-gold-ep">  <button class="sidebar-song" onclick="showSong('b1')">Weight of The World</button>
   <button class="sidebar-song" onclick="showSong('b2')">Tell Me</button>
   <button class="sidebar-song" onclick="showSong('b3')">Phoenix Rising</button>
   <button class="sidebar-song" onclick="showSong('b4')">I Still Said It</button>
   <button class="sidebar-song" onclick="showSong('b5')">The Weight of Quiet</button>
   <button class="sidebar-song" onclick="showSong('b6')">Bleed in Gold</button>
-</div>
+  </div>
+</div></div>
 <div class="sidebar-album">
-  <div class="sidebar-album-name">Insert Coin (Player Two)</div>
-  <button class="sidebar-song" onclick="showSong('ic1')">Insert Coin (Player Two)</button>
+  <div class="sidebar-album-name" onclick="toggleAlbum('insert-coin--player-two-')" id="album-insert-coin--player-two-">Insert Coin (Player Two)</div>
+  <div class="sidebar-album-songs" id="songs-insert-coin--player-two-">  <button class="sidebar-song" onclick="showSong('ic1')">Insert Coin (Player Two)</button>
   <button class="sidebar-song" onclick="showSong('ic2')">Running from Myself</button>
   <button class="sidebar-song" onclick="showSong('ic3')">Save the Princess</button>
   <button class="sidebar-song" onclick="showSong('ic4')">Virtue.exe</button>
@@ -404,19 +414,21 @@
   <button class="sidebar-song" onclick="showSong('ic15')">Factory Line</button>
   <button class="sidebar-song" onclick="showSong('ic16')">The Dawn</button>
   <button class="sidebar-song" onclick="showSong('ic17')">You Were the Fire</button>
-</div>
+  </div>
+</div></div>
 <div class="sidebar-album">
-  <div class="sidebar-album-name">Shadows Gathering EP</div>
-  <button class="sidebar-song" onclick="showSong('sg1')">Intro: Carnival Approaches</button>
+  <div class="sidebar-album-name" onclick="toggleAlbum('shadows-gathering-ep')" id="album-shadows-gathering-ep">Shadows Gathering EP</div>
+  <div class="sidebar-album-songs" id="songs-shadows-gathering-ep">  <button class="sidebar-song" onclick="showSong('sg1')">Intro: Carnival Approaches</button>
   <button class="sidebar-song" onclick="showSong('sg2')">Freakshow Waltz</button>
   <button class="sidebar-song" onclick="showSong('sg3')">Veins of Velvet Smoke</button>
   <button class="sidebar-song" onclick="showSong('sg4')">Porcelain Animals</button>
   <button class="sidebar-song" onclick="showSong('sg5')">Paper Wings</button>
   <button class="sidebar-song" onclick="showSong('sg6')">Walls of Thought</button>
-</div>
+  </div>
+</div></div>
 <div class="sidebar-album">
-  <div class="sidebar-album-name">Carnival of Shadows</div>
-  <button class="sidebar-song" onclick="showSong('cos1')">Bloodstring Symphony</button>
+  <div class="sidebar-album-name" onclick="toggleAlbum('carnival-of-shadows')" id="album-carnival-of-shadows">Carnival of Shadows</div>
+  <div class="sidebar-album-songs" id="songs-carnival-of-shadows">  <button class="sidebar-song" onclick="showSong('cos1')">Bloodstring Symphony</button>
   <button class="sidebar-song" onclick="showSong('cos2')">Circle of Knives</button>
   <button class="sidebar-song" onclick="showSong('cos3')">Gilded Bleeding Show</button>
   <button class="sidebar-song" onclick="showSong('cos4')">Crimson Carousel</button>
@@ -432,7 +444,8 @@
   <button class="sidebar-song" onclick="showSong('cos14')">Willing Servant of Strange</button>
   <button class="sidebar-song" onclick="showSong('cos15')">Checkmate Parade</button>
   <button class="sidebar-song" onclick="showSong('cos16')">Painted Grins and Puppet Strings</button>
-</div>
+  </div>
+</div></div>
   </div>
 
   <!-- SONG PANELS -->
@@ -3258,6 +3271,33 @@ And that's the reason I'm here today</pre>
 
   // Set first song active in sidebar on load
   document.querySelector('.sidebar-song').classList.add('active');
+
+  // Open first album by default
+  (function() {
+    const first = document.querySelector('.sidebar-album-name');
+    if (first) {
+      first.classList.add('open');
+      const id = first.id.replace('album-', '');
+      const songs = document.getElementById('songs-' + id);
+      if (songs) songs.classList.add('open');
+    }
+  })();
+
+  function toggleAlbum(slug) {
+    const nameEl = document.getElementById('album-' + slug);
+    const songsEl = document.getElementById('songs-' + slug);
+    const isOpen = nameEl.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.sidebar-album-name').forEach(el => el.classList.remove('open'));
+    document.querySelectorAll('.sidebar-album-songs').forEach(el => el.classList.remove('open'));
+
+    // Open clicked if it was closed
+    if (!isOpen) {
+      nameEl.classList.add('open');
+      songsEl.classList.add('open');
+    }
+  }
 </script>
 
 </body>
