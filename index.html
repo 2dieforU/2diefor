@@ -436,6 +436,39 @@
     animation: fadeUp 0.3s forwards;
   }
   .spotify-embed-wrap.visible { display: block; }
+  .stream-links {
+    display: none;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+  .stream-links.visible { display: flex; }
+  .stream-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.8rem;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .stream-link:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  .stream-link.sp  { color: #1DB954; border-color: rgba(29,185,84,0.3); }
+  .stream-link.sp:hover  { border-color: #1DB954; }
+  .stream-link.ym  { color: #FF0000; border-color: rgba(255,0,0,0.2); }
+  .stream-link.ym:hover  { border-color: #FF0000; }
+  .stream-link.ap  { color: #fc3c44; border-color: rgba(252,60,68,0.2); }
+  .stream-link.ap:hover  { border-color: #fc3c44; }
+  .stream-link.td  { color: #00FFFF; border-color: rgba(0,255,255,0.2); }
+  .stream-link.td:hover  { border-color: #00FFFF; }
+  .stream-link.az  { color: #00A8E0; border-color: rgba(0,168,224,0.2); }
+  .stream-link.az:hover  { border-color: #00A8E0; }
+
   .spotify-embed-wrap iframe {
     width: 100%;
     height: 152px;
@@ -1142,6 +1175,15 @@
     </iframe>
   </div>
 
+  <!-- STREAMING LINKS -->
+  <div class="stream-links" id="stream-links">
+    <a class="stream-link sp" id="sl-spotify" href="#" target="_blank">♫ Spotify</a>
+    <a class="stream-link ym" id="sl-ym" href="#" target="_blank">▶ YouTube Music</a>
+    <a class="stream-link ap" id="sl-apple" href="#" target="_blank"> Apple Music</a>
+    <a class="stream-link td" id="sl-tidal" href="#" target="_blank">≋ Tidal</a>
+    <a class="stream-link az" id="sl-amazon" href="#" target="_blank">♪ Amazon Music</a>
+  </div>
+
   <div class="top-track">
     <div class="track-icon">▶</div>
     <div class="track-meta">
@@ -1247,6 +1289,31 @@
     update();
     setInterval(update, 1000);
   })();
+<script>
+  var streamData = {"0jgqvKxL4k4xUj5qmhuKRS": {"name": "Fallout", "ym": "Fallout+2DieFor", "apple": "https://music.apple.com/ca/artist/2diefor/1805114949", "tidal": "https://tidal.com/artist/56068329", "amazon": "https://www.amazon.com/music/player/artists/B0F2TMLNH4/2diefor"}, "1njKRwq8VxnR7zNbh0p3KP": {"name": "Bleed in Gold", "ym": "Bleed+in+Gold+2DieFor", "apple": "https://music.apple.com/ca/artist/2diefor/1805114949", "tidal": "https://tidal.com/artist/56068329", "amazon": "https://www.amazon.com/music/player/artists/B0F2TMLNH4/2diefor"}, "2Aoc8JePOX9yNc3nHtjldr": {"name": "Insert Coin", "ym": "Insert+Coin+2DieFor", "apple": "https://music.apple.com/ca/artist/2diefor/1805114949", "tidal": "https://tidal.com/artist/56068329", "amazon": "https://www.amazon.com/music/player/artists/B0F2TMLNH4/2diefor"}, "4lQt2EKAhKhFtTfVPO9EmP": {"name": "Shadows Gathering", "ym": "Shadows+Gathering+2DieFor", "apple": "https://music.apple.com/ca/artist/2diefor/1805114949", "tidal": "https://tidal.com/artist/56068329", "amazon": "https://www.amazon.com/music/player/artists/B0F2TMLNH4/2diefor"}, "72Z2EnsUFnjil9WFMmT7Dk": {"name": "Carnival of Shadows", "ym": "Carnival+of+Shadows+2DieFor", "apple": "https://music.apple.com/ca/artist/2diefor/1805114949", "tidal": "https://tidal.com/artist/56068329", "amazon": "https://www.amazon.com/music/player/artists/B0F2TMLNH4/2diefor"}, "ashes": {"name": "Ashes & Echoes", "ym": "Ashes+Echoes+2DieFor", "apple": "https://music.apple.com/ca/artist/2diefor/1805114949", "tidal": "https://tidal.com/artist/56068329", "amazon": "https://www.amazon.com/music/player/artists/B0F2TMLNH4/2diefor"}};
+
+  function loadSpotify(albumId, albumName) {
+    var wrap = document.getElementById('spotify-embed-wrap');
+    var iframe = document.getElementById('spotify-embed-iframe');
+    var label = document.getElementById('spotify-embed-album-name');
+    var links = document.getElementById('stream-links');
+
+    iframe.src = 'https://open.spotify.com/embed/album/' + albumId + '?utm_source=generator&theme=0';
+    label.textContent = albumName;
+    wrap.classList.add('visible');
+    links.classList.add('visible');
+
+    // Update streaming links
+    var d = streamData[albumId] || streamData['ashes'];
+    document.getElementById('sl-spotify').href = 'https://open.spotify.com/album/' + albumId;
+    document.getElementById('sl-ym').href = 'https://music.youtube.com/search?q=' + (d.ym || albumName.replace(/ /g,'+') + '+2DieFor');
+    document.getElementById('sl-apple').href = d.apple;
+    document.getElementById('sl-tidal').href = d.tidal;
+    document.getElementById('sl-amazon').href = d.amazon;
+
+    // Scroll to embed
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 </script>
 </body>
 </html>
