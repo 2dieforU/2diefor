@@ -385,6 +385,92 @@
   @media (min-width: 900px) {
     footer { flex-direction: row; text-align: left; padding: 3rem 4rem; }
   }
+
+  /* HAMBURGER */
+  .nav-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px;
+    z-index: 201;
+    flex-shrink: 0;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--white);
+    transition: transform 0.3s, opacity 0.3s, width 0.3s;
+    transform-origin: center;
+  }
+
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* MOBILE MENU OVERLAY */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    background: var(--black);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .mobile-menu.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .mobile-menu a {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 10vw, 3.5rem);
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.4rem 2rem;
+    transition: color 0.2s;
+    text-align: center;
+  }
+
+  .mobile-menu a:hover,
+  .mobile-menu a:active { color: var(--white); }
+
+  .mobile-menu a.highlight { color: var(--accent); }
+
+  .mobile-menu-spotify {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    width: 100%;
+    text-align: center;
+  }
+
+  .mobile-menu-spotify a {
+    font-size: 0.85rem !important;
+    letter-spacing: 0.15em;
+    color: var(--accent) !important;
+  }
+
+  @media (min-width: 900px) {
+    .nav-hamburger { display: none; }
+    .mobile-menu { display: none; }
+  }
+
 </style>
 </head>
 <body>
@@ -402,6 +488,9 @@
     <li><a href="2diefor-epk.html" style="color:var(--accent)!important;">EPK</a></li>
   </ul>
   <a href="https://open.spotify.com/artist/7ktontuidnJoXRyiM8maQd" target="_blank" class="nav-spotify">▶ Spotify</a>
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <!-- PAGE HEADER -->
